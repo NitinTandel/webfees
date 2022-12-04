@@ -1,0 +1,35 @@
+<div  ng-controller='UserListCntrl'>
+  <div class="page-header" >
+    <h1>Change Company</h1>
+  </div>
+
+<table border="0" align="center">
+  <tr>
+    <td  style="margin: 10px; padding: 5px;"><center>
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title"><center>Change Current Company</center></h3>
+        </div>
+        <form name="frmModcomp" ng-submit="frmModcomp.$valid && submitForm(frmModcomp.$valid)" novalidate role='form'>
+          <div class="panel-body">
+              <div class="form-group" style="width:400px">
+                <label>Company</label>
+                <select class="selectpicker form-control"  ng-model="NewComp" 
+                    ng-options="company as company.COMPANY for company in companylist" name="newco" required>
+                </select>
+              </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="changeCurrentCo(NewComp, 'change')" ng-disabled='frmModcomp.$invalid'>Save</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="changeCurrentCo(NewComp, 'cancel')">Cancel</button>
+            </div>
+          </div>
+        </form> 
+
+      </div>
+    </td>
+  </tr>
+</table>
+
+</div> <!-- controller div -->
+

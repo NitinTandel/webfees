@@ -1,0 +1,120 @@
+<center>
+<h3 class="page-header">Masters Menu</h3>
+<ul class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li>Master Data</li>
+</ul>
+
+{{#if_eq user.CURRENT_MENU  1}}
+
+<table border="0">
+	<tr>
+		<td  style="margin: 10px; padding: 5px;"><center>
+			<div class="card bg-info" style="width:150px" >
+			  <a href="/groups">	
+			  	<img class="card-img-top" src="../img/group_master.png" alt="Group Master" href="#">
+			  </a>
+			  <div class="card-body">
+			    <h4 class="card-title">Group Master</h4>
+			  </div>
+			</div>
+		</td>
+		<td style="margin: 10px; padding: 5px;"><center>
+			<div class="card bg-info" style="width:150px">
+			  <a href="/parties">	
+			  	<img class="card-img-top" src="../img/client_master.png" alt="Clinet Master" href="#">
+			  </a>
+			  <div class="card-body">
+			    <h4 class="card-title">Party Master</h4>
+			  </div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td  style="margin: 10px; padding: 5px;"><center>
+			<div class="card bg-info" style="width:150px" >
+			  <a href="/trcds">	
+			  	<img class="card-img-top" src="../img/trcd.png" alt="Group Master" href="#">
+			  </a>
+			  <div class="card-body">
+			    <h4 class="card-title">Transaction Codes</h4>
+			  </div>
+			</div>
+		</td>
+		<td style="margin: 10px; padding: 5px;"><center>
+			<div class="card bg-info" style="width:150px">
+			  <a href="/trcdsubs">	
+			  	<img class="card-img-top" src="../img/subcd.png" alt="Clinet Master" href="#">
+			  </a>
+			  <div class="card-body">
+			    <h4 class="card-title">Tranaction Subcodes</h4>
+			  </div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td  style="margin: 10px; padding: 5px;"><center>
+			<div class="card bg-info" style="width:150px" >
+			  <a href="/parties/changeprtcode">	
+			  	<img class="card-img-top" src="../img/replace.png" alt="Change FileNo" href="#">
+			  </a>
+			  <div class="card-body">
+			    <h4 class="card-title">Change Party Codes</h4>
+			  </div>
+			</div>
+		</td>
+	</tr>
+</table>
+
+{{else}}
+
+<table border="0">
+	<tr>
+		<td  style="margin: 10px; padding: 5px;"><center>
+			<div class="card bg-info" style="width:150px" >
+			  <a href="/groups">	
+			  	<img class="card-img-top" src="../img/group_master.png" alt="Group Master" href="#">
+			  </a>
+			  <div class="card-body">
+			    <h4 class="card-title">Group Master</h4>
+			  </div>
+			</div>
+		</td>
+		<td style="margin: 10px; padding: 5px;"><center>
+			<div class="card bg-info" style="width:150px">
+			  <a href="/parties">	
+			  	<img class="card-img-top" src="../img/client_master.png" alt="Clinet Master" href="#">
+			  </a>
+			  <div class="card-body">
+			    <h4 class="card-title">Party Master</h4>
+			  </div>
+			</div>
+		</td>
+	</tr>
+
+	<tr>
+		<td  style="margin: 10px; padding: 5px;"><center>
+			<div class="card bg-info" style="width:150px" >
+			  <a href="/parties/changeprtcode">	
+			  	<img class="card-img-top" src="../img/replace.png" alt="Change FileNo" href="#">
+			  </a>
+			  <div class="card-body">
+			    <h4 class="card-title">Change Party Codes</h4>
+			  </div>
+			</div>
+		</td>
+		<td style="margin: 10px; padding: 5px;"><center>
+			<div class="card bg-info" style="width:150px">
+			  <a href="/years">	
+			  	<img class="card-img-top" src="../img/subcd.png" alt="Clinet Master" href="#">
+			  </a>
+			  <div class="card-body">
+			    <h4 class="card-title">IT Due Dates</h4>
+			  </div>
+			</div>
+		</td>
+	</tr>
+</table>
+
+{{/if_eq}}
+

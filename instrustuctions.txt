@@ -1,0 +1,14 @@
+
+
+Following is the ip address for webfees server.
+192.168.0.107
+
+Please do not change it. If changed, need to reasign in router settings.
+
+
+-- Frist Tiem
+git status
+
+git init
+
+

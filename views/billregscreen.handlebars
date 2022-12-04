@@ -1,0 +1,164 @@
+<div ng-controller='groupCntrl'>
+<feesapp-page-header></feesapp-page-header>
+<ul class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="/menus/menuMasters">Masters Menu</a></li>
+  <li>Group Masters</li>
+</ul>
+
+<div ng-hide="pageDataLoaded" id="loader"></div>
+
+<div ng-cloak class="col-sm-12">
+  <table ng-cloak id="FeesAppTable" class="table table-bordered table-hover table-sm" >
+    <thead class="datatblheader" >
+      <tr class="info">
+        <th width="200px">
+          <a href="#" ng-click="orderByMe('GRP_CODE')">
+           Group ID 
+            <span ng-show="sortColumn == 'GRP_CODE' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'GRP_CODE' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="300px">
+          <a href="#" ng-click="orderByMe('GRP_NAME')">
+           Group Name 
+            <span ng-show="sortColumn == 'GRP_NAME' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'GRP_NAME' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="200px">Actions</th>
+      </tr>
+      <tr class="active">
+        <th width="200px">
+          <input ng-model="search.GRP_CODE"  placeholder="search for Group Id" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="300px">
+          <input ng-model="search.GRP_NAME"  placeholder="search for Group name" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="200px">
+          <button class="btn btn-primary" ng-click="addGroup()" >Add Group</button>
+        </th>
+      </tr>  
+    </thead>
+    <tbody class="datatblbody">
+      <tr line-height:"25px;" class="warning" ng-repeat="group in grouplist | orderBy:sortColumn:sortReverse | filter:{GRP_CODE: search.GRP_CODE, GRP_NAME: search.GRP_NAME }">
+        <td width="200px">[[group.GRP_CODE]]</td>
+        <td width="300px">[[group.GRP_NAME]]</td>
+        <td width="200px">
+            <button type="button" ng-click="removeGroup(group)"  class="btn btn-sm btn-danger" >
+              <i class="glyphicon glyphicon-trash"></i>
+            </button>
+            <button type="button" ng-click="editGroup(group)"  class="btn btn-sm btn-danger" >
+              <i class="glyphicon glyphicon-pencil"></i>
+            </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+<div class="webfeesfooter">
+  <div ng-class='rtnMessageColor'>[[rtnMessage]]</div>
+</div>
+
+
+  <div id="DeleteGroup" class="modal fade" role="dialog" tabindex="-1"  aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 id="DelformHdr" class="modal-title">Delete Group</h4>
+        </div>
+        <form name="frmDelCo" ng-submit="ffrmDelCo.$valid && submitForm(frmDelCo.$valid)" novalidate role='form'>
+          <div class="modal-body">
+              <div class="form-group">
+                <label id="Delfromlbl">Are you sure to delete the Group : [[selectedGrp.GRP_CODE]] : [[selectedGrp.GRP_NAME]] </label>
+              </div>
+              <div id="hiddenvar" ng-hide="true">
+                <label id="rowind"> [[currentIndex]] </label>
+              </div>
+          </div>    
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="deleteGroup(selectedGrp.GRP_CODE, currentIndex)">Delete</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="EditGroup" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modify Group</h4>
+        </div>
+        <form name="frmModgrp" ng-submit="frmModgrp.$valid && submitForm(frmModgrp.$valid)" novalidate role='form'>
+          <div class="modal-body">
+              <div class="form-group">
+                <label>Group ID : </label>
+                <input class="form-control" ng-model="selectedGrp.GRP_CODE" name="groupid" required disabled>
+              </div>
+              <div class="form-group">
+                <label>Group Name* :</label>
+                <input type="text" class="form-control" ng-model="selectedGrp.GRP_NAME" placeholder="Group Name" name="groupname" required>
+                <span ng-show="frmModgrp.groupname.$dirty && frmModgrp.groupname.$error.required">Group Name is required !</span>
+              </div>
+              <div class="form-group">
+                <label>Group Address :</label>
+                <input type="text" class="form-control" ng-model="selectedGrp.ADDRESS1" placeholder="Address line 1" name="add1" >
+                <input type="text" class="form-control" ng-model="selectedGrp.ADDRESS2" placeholder="Address line 2" name="add2" >
+                <input type="text" class="form-control" ng-model="selectedGrp.ADDRESS3" placeholder="Address line 3" name="add3" >
+                <input type="text" class="form-control" ng-model="selectedGrp.ADDRESS4" placeholder="Address line 4" name="add4" >
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="modifyGroup(selectedGrp)" ng-disabled='frmModgrp.$invalid'>Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+
+
+  <div id="AddNewGroup" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modify Group</h4>
+        </div>
+        <form name="frmAddgrp" ng-submit="frmAddgrp.$valid && submitForm(frmAddgrp.$valid)" novalidate role='form'>
+          <div class="modal-body">
+              <div class="form-group">
+                <label>Group ID : </label>
+                <input class="form-control" ng-model="Grp.GRP_CODE" name="groupid" required>
+              </div>
+              <div class="form-group">
+                <label>Group Name* :</label>
+                <input type="text" class="form-control" ng-model="Grp.GRP_NAME" placeholder="Group Name" name="groupname" required>
+                <span ng-show="frmAddgrp.groupname.$dirty && frmAddgrp.groupname.$error.required">Group Name is required !</span>
+              </div>
+              <div class="form-group">
+                <label>Group Address :</label>
+                <input type="text" class="form-control" ng-model="Grp.ADDRESS1" placeholder="Address line 1" name="add1" >
+                <input type="text" class="form-control" ng-model="Grp.ADDRESS2" placeholder="Address line 2" name="add2" >
+                <input type="text" class="form-control" ng-model="Grp.ADDRESS3" placeholder="Address line 3" name="add3" >
+                <input type="text" class="form-control" ng-model="Grp.ADDRESS4" placeholder="Address line 4" name="add4" >
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="registerNewGroup(Grp)" ng-disabled='frmAddgrp.$invalid'>Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+
+</div><!-- /.col-sm-12 -->
+</div> <!-- controller div -->
+
+

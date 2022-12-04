@@ -1,0 +1,146 @@
+<div ng-controller='navMenuCntrl'>
+{{#if_eq user.CURRENT_MENU  1}}
+	<h2 class="page-header"><center>Fees Menu</h2>
+{{else}}
+	<h2 class="page-header"><center>Files Menu</h2>
+{{/if_eq}}
+
+<center>
+{{#if user}}
+
+{{#if_eq user.CURRENT_MENU  1}}
+	<table border="0">
+		<tr>
+			<td  style="margin: 10px; padding: 5px;"><center>
+				<div class="card bg-info" style="width:150px" >
+				  <a href="/menus/menuMasters">	
+				  	<img class="card-img-top" src="img/MasterData.png" alt="Master Data" >
+				  </a>
+				  <div class="card-body">
+				    <h4 class="card-title">Master Data</h4>
+				  </div>
+				</div>
+			</td>
+			<td style="margin: 10px; padding: 5px;"><center>
+				<div class="card bg-info" style="width:150px">
+				  <a href="/menus/menuTrans">	
+				  	<img class="card-img-top" src="img/TansData.png" alt="Transaction Data" >
+				  </a>
+				  <div class="card-body">
+				    <h4 class="card-title">Transactions</h4>
+				  </div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td style="margin: 10px; padding: 5px;"><center>
+				<div class="card bg-info" style="width:150px">
+				  <a href="/menus/menuReports">	
+				  	<img class="card-img-top" src="img/ReportsMenu.png" alt="Reports" >
+				  </a>
+				  <div class="card-body">
+				    <h4 class="card-title">Reports</h4>
+				  </div>
+				</div>
+			</td>
+			<td style="margin: 10px; padding: 5px;"><center>
+				<div class="card bg-info" style="width:150px">
+				  <a href="/menus/menuIntegration">	
+				  	<img class="card-img-top" src="img/IntegrationMenu.png" alt="Integrations" >
+				  </a>
+				  <div class="card-body">
+				    <h4 class="card-title">Integrations</h4>
+				  </div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td style="margin: 10px; padding: 5px;"><center>
+				<div class="card bg-info" style="width:150px">
+				  <a href="/company">	
+				  	<img class="card-img-top" src="img/CompanyMenu.png" alt="Manage Companies" >
+				  </a>
+				  <div class="card-body">
+				    <h4 class="card-title">Manage Companies</h4>
+				  </div>
+				</div>
+			</td>
+			<td style="margin: 10px; padding: 5px;"><center>
+				<div class="card bg-info" style="width:150px">
+				  <a href="/menus/menuSetting">	
+				  	<img class="card-img-top" src="img/ConfigMenu.png" alt="Settings" >
+				  </a>
+				  <div class="card-body">
+				    <h4 class="card-title">Settings</h4>
+				  </div>
+				</div>
+			</td>
+		</tr>
+	</table>
+
+{{else}}
+
+	<table border="0">
+		<tr>
+			<td  style="margin: 10px; padding: 5px;"><center>
+				<div class="card bg-info" style="width:150px" >
+				  <a href="/menus/menuMasters">	
+				  	<img class="card-img-top" src="img/MasterData.png" alt="Master Data" >
+				  </a>
+				  <div class="card-body">
+				    <h4 class="card-title">Master Data</h4>
+				  </div>
+				</div>
+			</td>
+			<td style="margin: 10px; padding: 5px;"><center>
+				<div class="card bg-info" style="width:150px">
+				  <a href="/menus/menuTrans">	
+				  	<img class="card-img-top" src="img/TansData.png" alt="Reports" >
+				  </a>
+				  <div class="card-body">
+				    <h4 class="card-title">Reports</h4>
+				  </div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td style="margin: 10px; padding: 5px;"><center>
+				<div class="card bg-info" style="width:150px">
+				  <a href="/company">	
+				  	<img class="card-img-top" src="img/CompanyMenu.png" alt="Manage Companies" >
+				  </a>
+				  <div class="card-body">
+				    <h4 class="card-title">Data Entry</h4>
+				  </div>
+				</div>
+			</td>
+
+		</tr>
+
+
+	</table>
+{{/if_eq}}
+
+{{else}}
+	<div class="card bg-info" style="width:300px">
+		<img class="card-img-top" src="img/login.png" alt="Card image" >
+		<div class="card-body">
+			<h4 class="card-title">Login</h4>
+                <form name="frm" method="post" action="/users/login">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" class="form-control" name="username" placeholder="Username">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" class="form-control" name="password" placeholder="Password">
+                    </div>
+                    <button  class="btn btn-primary" href="/users/login">Login</button>
+                    <button class="btn btn-primary" href="/users/forgot">Forgot password ?</button>
+                </form>
+			    <p class="card-text">.</p>
+		</div>
+	</div>
+
+{{/if}}
+

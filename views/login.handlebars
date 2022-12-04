@@ -1,0 +1,32 @@
+<h2 class="page-header"><center>Welcome to WebFees</h2>
+<center>
+	<div class="card bg-info" style="width:300px">
+		<img class="card-img-top" src="../img/login.png" alt="Card image" >
+		<div class="card-body">
+			<h4 class="card-title">Login</h4>
+                <form name="frm" method="post" action="/users/login">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" class="form-control" name="username" placeholder="Username">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" class="form-control" name="password" placeholder="Password">
+                    </div>
+<!--
+                      <div class="form-group">
+                        <label>Start with</label>
+                          <select class="selectpicker form-control" name="startMenu" required>
+                            <option value="0" selected>Files</option>
+                            <option value="1">Fees</option>
+                          </select>
+                      </div>
+
+                    <button type="submit" class="btn btn-default">Login</button> -->
+                    <button  class="btn btn-primary" href="/users/login">Login</button>
+                    <button class="btn btn-primary" href="/users/forgot">Forgot password ?</button>
+                </form>
+			    <p class="card-text">.</p>
+		</div>
+	</div>
+

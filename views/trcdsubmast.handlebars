@@ -1,0 +1,210 @@
+<div ng-controller='trcdsubCntrl'>
+<feesapp-page-header></feesapp-page-header>
+<ul class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="/menus/menuMasters">Masters Menu</a></li>
+  <li>Transaction Subcodes</li>
+</ul>
+
+<div ng-hide="pageDataLoaded" id="loader"></div>
+
+<div ng-cloak class="col-sm-12">
+  <table ng-cloak id="FeesAppTable" class="table table-bordered table-hover table-sm" >
+    <thead class="datatblheader" >
+      <tr class="info">
+        <th width="150px">
+          <a href="#" ng-click="orderByMe('TRCD')">
+           Transaction ID 
+            <span ng-show="sortColumn == 'TRCD' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'TRCD' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="250px">
+          <a href="#" ng-click="orderByMe('TRCDDESC')">
+           Tran. Description 
+            <span ng-show="sortColumn == 'TRCDDESC' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'TRCDDESC' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="150px">
+          <a href="#" ng-click="orderByMe('SUBCD')">
+           Sub-transaction ID 
+            <span ng-show="sortColumn == 'SUBCD' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'SUBCD' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="250px">
+          <a href="#" ng-click="orderByMe('DESC')">
+           Description 
+            <span ng-show="sortColumn == 'DESC' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'DESC' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="150px">
+          <a href="#" ng-click="orderByMe('DEFAULT_AMT')">
+           Default Amount 
+            <span ng-show="sortColumn == 'DEFAULT_AMT' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'DEFAULT_AMT' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="150px">Actions</th>
+      </tr>
+      <tr class="active">
+        <th width="150px">
+          <input ng-model="search.TRCD"  placeholder="search for Tran. Id" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="250px">
+          <input ng-model="search.TRCDDESC"  placeholder="search for Tran. Description" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="150px">
+          <input ng-model="search.SUBCD"  placeholder="search for sub-Tran. Id" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="250px">
+          <input ng-model="search.DESC"  placeholder="search for Description" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="150px">.</th>
+        <th width="150px">
+          <button class="btn btn-primary" ng-click="addTrcdsub()" >Add new Code</button>
+        </th>
+      </tr>  
+    </thead>
+    <tbody class="datatblbody">
+      <tr class="warning" ng-repeat="trcdsub in trcdsublist | orderBy:sortColumn:sortReverse | filter:{TRCD: search.TRCD, TRCDDESC: search.TRCDDESC, SUBCD: search.SUBCD, DESC: search.DESC }">
+        <td width="150px">[[trcdsub.TRCD]]</td>
+        <td width="250px">[[trcdsub.TRCDDESC]]</td>
+        <td width="150px">[[trcdsub.SUBCD]]</td>
+        <td width="250px">[[trcdsub.DESC]]</td>
+        <td width="150px" align="right">[[trcdsub.DEFAULT_AMT]]</td>
+        <td width="150px">
+            <button type="button" ng-click="removeTrcdsub(trcdsub)"  class="btn btn-sm btn-danger" >
+              <i class="glyphicon glyphicon-trash"></i>
+            </button>
+            <button type="button" ng-click="editTrcdsub(trcdsub)"  class="btn btn-sm btn-danger" >
+              <i class="glyphicon glyphicon-pencil"></i>
+            </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+<div class="webfeesfooter">
+  <div ng-class='rtnMessageColor'>[[rtnMessage]]</div>
+</div>
+
+
+  <div id="DeleteTrcdsub" class="modal fade" role="dialog" tabindex="-1"  aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 id="DelformHdr" class="modal-title">Delete Sub-Transaction Code</h4>
+        </div>
+        <form name="frmDelCo" ng-submit="ffrmDelCo.$valid && submitForm(frmDelCo.$valid)" novalidate role='form'>
+          <div class="modal-body">
+              <div class="form-group">
+                <label id="Delfromlbl">Are you sure to delete Transaction Code : [[selectedTrcdsub.TRCD]]-[[selectedTrcdsub.SUBCD]] : [[selectedTrcdsub.DESC]] </label>
+              </div>
+              <div id="hiddenvar" ng-hide="true">
+                <label id="rowind"> [[currentIndex]] </label>
+              </div>
+          </div>    
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="deleteTrcd(selectedTrcdsub.TRCD + selectedTrcdsub.SUBCD , currentIndex)">Delete</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="editTrcdsub" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modify Sub-Transaction Code</h4>
+        </div>
+        <form name="frmModgrp" ng-submit="frmModgrp.$valid && submitForm(frmModgrp.$valid)" novalidate role='form'>
+          <div class="modal-body">
+              <div class="form-group">
+                <label>Transaction ID : </label>
+                <input class="form-control" ng-model="selectedTrcdsub.TRCD" name="trcdid" required disabled>
+              </div>
+              <div class="form-group">
+                <label>Transaction Name* :</label>
+                <input type="text" class="form-control" ng-model="selectedTrcdsub.TRCDDESC" placeholder="Transaction Name" name="trcdname" required disabled>
+              </div>
+              <div class="form-group">
+                <label>Sub-Transaction ID : </label>
+                <input class="form-control" ng-model="selectedTrcdsub.SUBCD" name="trcdsubid" required disabled>
+              </div>
+              <div class="form-group">
+                <label>Sub-Transaction Name* :</label>
+                <input type="text" class="form-control" ng-model="selectedTrcdsub.DESC" placeholder="Sub-Transaction Name" name="trcdsubname" >
+                <span ng-show="frmModgrp.trcdsubname.$dirty && frmModgrp.trcdsubname.$error.required">Sub-Transaction Name is required !</span>
+              </div>
+              <div class="form-group">
+                <label>Default Amount :</label>
+                <input type="number" class="form-control" ng-model="selectedTrcdsub.DEFAULT_AMT" placeholder="Default Amount" name="trcdsubDefaultAmt" required>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="modifyTrcdsub(selectedTrcdsub)" ng-disabled='frmModgrp.$invalid'>Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+
+
+  <div id="AddNewTrcdsub" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Add New Transaction Code</h4>
+        </div>
+        <form name="frmAddCo" ng-submit="frmAddCo.$valid && submitForm(frmAddCo.$valid)" novalidate role='form'>
+          <div class="modal-body">
+              <div class="form-group">
+                <label>Transaction ID : </label>
+                <input class="form-control" ng-model="selectedTrcdsub.TRCD" name="trcdid" required disabled>
+              </div>
+              <div class="form-group">
+                <label>Transaction Name* :</label>
+                <input list="trcdslist" class="form-control" ng-model="selectedTrcdsub.TRCDDESC" ng-blur="getSelectedTrcdID(selectedTrcdsub.TRCDDESC)" placeholder="Transaction Name" name="trcdname" required >
+                <span ng-show="frmModgrp.trcdname.$dirty && frmModgrp.trcdname.$error.required">Transaction Name is required !</span>
+                <span ng-show="isIncorrectTrcd">Incorect Transaction Code !!</span> 
+                <datalist id="trcdslist" >
+                    <option ng-repeat="m in trcdlist">[[m.TRCDDESC]]</option> 
+                </datalist>
+              </div>
+              <div class="form-group">
+                <label>Sub-Transaction ID* :</label>
+                <input class="form-control" ng-model="selectedTrcdsub.SUBCD" name="trcdsubid" required>
+                <span ng-show="frmModgrp.trcdsubid.$dirty && frmModgrp.trcdsubid.$error.required">Sub-Transaction Id is required !</span>
+              </div>
+              <div class="form-group">
+                <label>Sub-Transaction Name* :</label>
+                <input type="text" class="form-control" ng-model="selectedTrcdsub.DESC" placeholder="Sub-Transaction Name" name="trcdsubname" >
+                <span ng-show="frmModgrp.trcdsubname.$dirty && frmModgrp.trcdsubname.$error.required">Sub-Transaction Name is required !</span>
+              </div>
+              <div class="form-group">
+                <label>Default Amount :</label>
+                <input type="number" class="form-control" ng-model="selectedTrcdsub.DEFAULT_AMT" placeholder="Default Amount" name="trcdsubDefaultAmt" required>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="registerNewTrcdsub(selectedTrcdsub)" ng-disabled='frmAddCo.$invalid'>Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+</div><!-- /.col-sm-12 -->
+</div> <!-- controller div -->
+
+

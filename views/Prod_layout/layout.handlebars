@@ -1,0 +1,155 @@
+<!DOCTYPE html >
+<html lang="en" ng-app="FeesApp">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Fees application for CA and Tax consultants">
+    <meta name="author" content="Nitin Tandel">
+
+    <title>WebFees</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.css" />
+    <!-- Bootstrap theme -->
+    <link href="/css/bootstrap-theme.min.css" rel="stylesheet">
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+        input.ng-invalid.ng-dirty {border:1px solid red;}
+    </style>
+  </head>
+
+  <body>
+    <!-- Fixed navbar -->
+        <div  ng-controller='navBarCntrl'>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+          <div class="container">
+            <div class="navbar-header" >
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="#">WebFees</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+              <ul class="nav navbar-nav">
+                <li class="active"><a href="/">Home</a></li>
+                <li><a href="/about">About</a></li>
+              </ul>
+              <ul class="nav navbar-nav navbar-center">
+                <li ><a href="#" ng-model="gblCoId">{{user.COMPANY}}</a></li>
+                <li><a href="#">{{user.DEFAULT_YEAR}}</a></li>
+              </ul>
+
+              <ul class="nav navbar-nav navbar-right">  
+                {{#if user}}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{user.USERID}} <span class="glyphicon glyphicon-user"></span></a>
+                        <ul class="dropdown-menu">  
+                        <li><a href="/users/changeCompany">Change Company</a></li>
+                        <li><a href="/users/changeYear">Change Year</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="/users/userprofile">My Profile</a></li>
+                        <li><a href="/users/changepass">Change Password</a></li>         
+                        <li role="separator" class="divider"></li>
+                        <li><a href="/users/logout">Logout</a></li>
+                        </ul>
+                    </li>
+                {{else}}          
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Login <span class="glyphicon glyphicon-log-in"></span></a>
+                        <ul class="dropdown-menu">  
+                            <li><a href="/users/login">Login</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="/users/register">Register</a></li>
+                        </ul>
+                    </li>
+                {{/if}}              
+              </ul>
+            </div><!--/.nav-collapse -->
+          </div>
+        </nav>
+        </div>
+
+    <div class="container theme-showcase" role="main">
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+        {{{body}}}
+        {{#if success_msg}}
+            <div class="alert alert-success">{{success_msg}}</div>
+        {{/if}}
+
+        {{#if error_msg}}
+            <div class="alert alert-danger">{{error_msg}}</div>
+        {{/if}}
+
+        {{#if error}}
+            <div class="alert alert-danger">{{error}}</div>
+        {{/if}}    
+
+
+        <div id="snackbar">Some message..</div>
+
+        <div class="footer">
+            <center><table><tr><td style="height:40px;vertical-align:middle;">Copyright &copy; AVSolutions.com</td></tr></table></center>
+        </div>
+
+    </div> <!-- /container -->
+
+    <!-- Bootstrap core JavaScript
+          <p class="footertext">Copyright &copy; AVSolutions.com</p>
+
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+    <!-- Sequence should not be changed for js files -->
+
+    <script src="/js/jquery.min.js"></script> 
+<!--        
+    <script>window.jQuery || document.write('<script src="/js/vendor/jquery.min.js"><\/script>')</script>
+-->
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/angular.min.js"></script>
+    <script src="/js/docs.min.js"></script>
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/js/ie10-viewport-bug-workaround.js"></script>
+
+    <script src="/js/build/pdfmake.min.js"></script>
+    <script src="/js/build/vfs_fonts.js"></script>
+    <script src="/js/html2canvas.min.js"></script>
+
+    <!--  
+
+    <script src="/js/reports/BillFormat.js"></script>
+    <script src="/js/reports/OSRegFormat.js"></script>
+    <script src="/js/reports/BillRegFormat.js"></script>
+    <script src="/js/reports/LedgerFormat.js"></script>
+    <script src="/js/reports/rcptregFormat.js"></script>
+
+    <script src="/js/AppClient.js"></script>
+    <script src="/js/controllers.js"></script>
+    <script src="/js/CompanyCntrl.js"></script>
+    <script src="/js/GroupCntrl.js"></script>
+    <script src="/js/PartyCntrl.js"></script>
+    <script src="/js/trcdCntrl.js"></script>
+    <script src="/js/trcdsubCntrl.js"></script>
+    <script src="/js/billsCntrl.js"></script>
+    <script src="/js/RcptCntrl.js"></script>
+    <script src="/js/OSCntrl.js"></script>
+    <script src="/js/BillRegCntrl.js"></script>
+    <script src="/js/LedgerCntrl.js"></script>
+    <script src="/js/rcptregCntrl.js"></script>
+    <script src="/js/navMenuCntrl.js"></script>
+-->
+
+    <script src="/js/webfeesFE.js"></script>
+
+  </body>
+</html>

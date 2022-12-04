@@ -1,0 +1,26 @@
+**/node_modules
+**/db
+**/dbbackup
+**/data conversion
+**/dist
+**/old_formats
+**/pkg
+**/references
+Dockerfile
+.dockerignore
+package-lock.json
+*.rtf
+*.docx
+*.xlsx
+*.txt
+*.sql
+*.bat
+*.csv
+AVFServer.js
+AVSFees - Copy.js
+AVSFeesmin.js
+makeFE.js
+Packageserver.js
+webpack.config.js
+webpack-front.config - Copy.js
+webpack-front.config.js

@@ -1,0 +1,39 @@
+{
+  "name": "Fees",
+  "version": "1.0.0",
+  "description": "Fees Application",
+  "main": "AVSFees.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "webpack -d --watch",
+    "prod": "webpack -p ",
+    "start": "AVSFees.js"
+  },
+  "author": "Nitin Tandel",
+  "license": "ISC",
+  "dependencies": {
+    "ag-grid": "^18.1.2",
+    "ag-grid-angular": "^18.1.0",
+    "angular-smart-table": "^2.1.11",
+    "bcryptjs": "*",
+    "body-parser": "*",
+    "common.js": "^1.1.1",
+    "connect-flash": "*",
+    "cookie-parser": "^1.4.1",
+    "express": "*",
+    "express-handlebars": "*",
+    "express-messages": "*",
+    "express-session": "*",
+    "express-validator": "*",
+    "passport": "*",
+    "passport-http": "*",
+    "passport-local": "*",
+    "passport-token-auth": ">= 0.0.0",
+    "request": "^2.87.0",
+    "sqlite3": "*"
+  },
+  "devDependencies": {
+    "webpack": "^2.2.0"
+  }
+  
+}

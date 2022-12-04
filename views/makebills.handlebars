@@ -1,0 +1,377 @@
+<div ng-controller='billsCntrl'  >
+<feesapp-page-header></feesapp-page-header>
+<ul class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="/menus/menuTrans">Transactions</a></li>
+  <li>Make Bills</li>
+</ul>
+
+<div ng-hide="pageDataLoaded" id="loader"></div>
+
+<div ng-cloak class="col-sm-12"  id="billpage" >
+  <table ng-cloak id="FeesAppTable" class="table table-bordered table-hover table-sm" >
+    <thead class="datatblheader" >
+      <tr class="info">
+        <th width="50px"><a href="#" ng-click="selectAllBills()"><span class="glyphicon glyphicon-check"></span></a></th>
+        <th width="120px">
+          <a href="#" ng-click="orderByMe('BILL_STR')">
+           Bill No 
+            <span ng-show="sortColumn == 'BILL_STR' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'BILL_STR' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="120px">
+          <a href="#" ng-click="orderByMe('BILL_DT')">
+           Bill Date 
+            <span ng-show="sortColumn == 'BILL_DT' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'BILL_DT' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="150px">
+          <a href="#" ng-click="orderByMe('AC_CODE')">
+           Party Code 
+            <span ng-show="sortColumn == 'AC_CODE' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'AC_CODE' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="300px">
+          <a href="#" ng-click="orderByMe('AC_NAME')">
+           Party Name 
+            <span ng-show="sortColumn == 'AC_NAME' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'AC_NAME' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="150px">
+          <a href="#" ng-click="orderByMe('TOT_AMT')">
+           Amount 
+            <span ng-show="sortColumn == 'TOT_AMT' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'TOT_AMT' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="60px">
+          <a href="#" ng-click="orderByMe('CLIND')">
+           Closed? 
+            <span ng-show="sortColumn == 'CLIND' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'CLIND' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="200px">Actions</th>
+      </tr>
+      <tr class="active">
+        <th width="50px"></th>
+        <th width="120px">
+          <input ng-model="search.BILL_STR"  placeholder="search Bill No" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="120px">
+          <input ng-model="search.BILL_DT"  placeholder="search Bill Date" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="150px">
+          <input ng-model="search.AC_CODE"  placeholder="search Party Code" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="300px">
+          <input ng-model="search.AC_NAME"  placeholder="search Party name" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="150px">
+          <input ng-model="search.TO_AMT"  placeholder="search Amount" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="60px">
+          <input ng-model="search.CLIND" placeholder="Closed?" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="200px">
+          <button class="btn btn-primary" ng-click="addBill()" >Add Bill</button>
+          <button class="btn btn-primary" ng-click="PrintBills(1)" >Print</button>
+        </th>
+      </tr>  
+    </thead>
+    <tbody class="datatblbody">
+      <tr class="warning" ng-repeat="bill in filteredbills = (billslist | orderBy:sortColumn:sortReverse | filter:{BILL_STR: search.BILL_STR, BILL_DT: search.BILL_DT, AC_CODE: search.AC_CODE, AC_NAME: search.AC_NAME, TOT_AMT: search.TOT_AMT, CLIND: search.CLIND })">
+        <td width="50px"><input type="checkbox" ng-model="bill.CHECKED"></td>
+        <td width="120px">[[bill.BILL_STR]]</td>
+        <td width="120px">[[bill.BILL_DT]]</td>
+        <td width="150px">[[bill.AC_CODE]]</td>
+        <td width="300px">[[bill.AC_NAME]]</td>
+        <td width="150px" align="Right">[[bill.BILL_AMT]]</td>
+        <td width="60px">[[bill.CLIND]]</td>
+        <td width="200px">
+            <button type="button" ng-click="removeBill(bill)"  class="btn btn-sm btn-danger" >
+              <i class="glyphicon glyphicon-trash"></i>
+            </button>
+            <button type="button" ng-click="editThisBill(bill)"  class="btn btn-sm btn-danger" >
+              <i class="glyphicon glyphicon-pencil"></i>
+            </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+<div class="webfeesfooter">
+  <div ng-class='rtnMessageColor'>[[rtnMessage]]</div>
+</div>
+
+  <div id="DeleteBill" class="modal fade" role="dialog" tabindex="-1"  aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 id="DelformHdr" class="modal-title">Delete Bill</h4>
+        </div>
+        <form name="frmDelCo" ng-submit="ffrmDelCo.$valid && submitForm(frmDelCo.$valid)" novalidate role='form'>
+          <div class="modal-body">
+              <div class="form-group">
+                <label id="Delfromlbl">Are you sure to delete the Bill : [[selectedBill.BILL_NO]] : [[selectedBill.BILL_DT]] </label>
+              </div>
+              <div id="hiddenvar" ng-hide="true">
+                <label id="rowind"> [[currentIndex]] </label>
+              </div>
+          </div>    
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="deleteBill(selectedBill, currentIndex)">Delete</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="EditBill" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Modify Bill</h4>
+          </div>
+        <form name="frmModbill" ng-submit="frmModbill.$valid && submitForm(frmModbill.$valid)" novalidate role='form'> 
+          <fieldset ng-disabled="selectedBill.isClosedOld">
+          <div class="modal-body">
+            <table>
+              <tr>
+                 <td width="80px">Bill No : </td>
+                 <td width="100px"><input class="form-control" ng-model="selectedBill.BILL_NO" name="billno" required disabled></td>
+                 <td width="50px">  </td>
+                 <td width="100px">Bill Date : </td>
+                 <td width="100px"><input type="date" class="form-control" ng-model="selectedBill.selectedbillDt" name="billdt" required ></td>
+                 <td width="200px"> </td>
+              </tr>
+              <tr>
+                 <td width="80px">Party Code :</td>
+                 <td width="100px"><input class="form-control" ng-model="selectedBill.AC_CODE" name="partyid" required></td>
+                 <td width="50px">  </td>
+                 <td width="100px">Party Name </td>
+                 <td colspan="2" width="300px"><input list="Partylist" class="form-control" ng-model="selectedBill.AC_NAME" ng-blur="getSelectedPrtID(selectedBill.AC_NAME, 'Edit')" name="partynm" required></td>
+                  <datalist id="Partylist" >
+                      <option ng-repeat="m in partylist">[[m.AC_NAME]]</option> 
+                  </datalist>
+              </tr>
+              <tr>
+                 <td width="80px">Bill For the Year :</td>
+                 <td width="100px">
+                    <select class="selectpicker form-control"  ng-model="selectedBill.BILL_FOR_YEAR" name="billforyear" required>
+                        <option ng-repeat="year in yearlist">[[year.YEAR]]</option>
+                    </select>
+                 </td>
+                 <td width="50px">  </td>
+                 <td width="100px">Comments </td>
+                 <td cospan="2" width="300px">
+                   <input class="form-control" ng-model="selectedBill.REMARK" name="billremarks" >
+                  </td>
+              </tr>
+            </table>
+            <hr>
+            <table id="billdataTable" border="1" >
+              <thead class="billtblheader" >
+                <tr class="info">
+                  <th width="50px">Line</th>
+                  <th width="50px" ng-show="No">Trcd</th>
+                  <th width="150px">Transaction</th>
+                  <th width="70px" ng-show="No">Subcd</th>
+                  <th width="250px">Sub-Transaction Descr</th>
+                  <th width="250px">Remarks</th>
+                  <th width="100px">Amount</th>
+                  <th width="100px">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="billtblbody" >
+                <tr ng-repeat="transact in selectedBillTran">
+                  <td width="50px"><label id="idx">[[selectedBillTran.indexOf(transact) + 1]]</label></td>
+                  <td width="50px" ng-show="No"><input class="form-control" ng-model="transact.TRCD" name="TrcdId" ng-change="updaterowsubcdlist(transact.TRCD)" disabled></td>
+                  <td width="150px"><input list="Trcdlist" class="form-control" ng-model="transact.TRCDDESC" ng-blur="getTRCDID(transact.TRCDDESC, $index)" ng-disabled="transact.TRCD=='OST'" name="trcddesc">
+                  <datalist id="Trcdlist" >
+                      <option ng-repeat="t in trcdlist">[[t.TRCDDESC]]</option> 
+                  </datalist>
+                  </td>
+                  <td width="70px" ng-show="No"><input class="form-control" ng-model="transact.SUBCD" name="trcdsub"></td>
+                  <td width="250px"><input list="Subcdlist" class="form-control" ng-model="transact.SUBDESC" ng-focus="updaterowsubcdlist(transact.TRCD)" ng-blur="getSUBCDID(transact.SUBDESC, transact.TRCD, $index)" ng-disabled="transact.TRCD=='OST'" name="trcdsub">
+                  <datalist id="Subcdlist" >
+                      <option ng-repeat="s in rowsubcdlist">[[s.TRCDSUBDESC]]</option> 
+                  </datalist>
+                  </td>
+                  <td width="250px"><input class="form-control" ng-model="transact.REMARKS" ng-disabled="transact.TRCD=='OST'" name="trcd"></td>
+                  <td width="100px" align="right"><input type="number" style="text-align:right;" class="form-control"  ng-model="transact.BILL_AMT" ng-disabled="transact.TRCD=='OST'" ng-change="getBillTotal()"></td>
+                  <td width="100px">
+                    <button type="button" ng-click="addBillline(transact)"  class="btn btn-sm btn-danger">
+                      <i class="glyphicon glyphicon-plus"></i>
+                    </button>
+                    <button type="button" ng-click="removeBillline(transact, $index)" ng-disabled="transact.TRCD=='OST'" class="btn btn-sm btn-danger" >
+                      <i class="glyphicon glyphicon-minus"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot class="billtblfoot">
+                <tr>
+                  <td colspan="6" width="650px" align="right">Total : </td>
+                  <td width="100px" align="right"><input type="number" style="text-align:right;" class="form-control" ng-model="transactionTotal" disabled></td>
+                  <td width="100px"></td>
+                </tr>
+              </tfoot>
+            </table>
+            <div class="form-group">
+              Bill Closed ? <input type="checkbox" ng-model="selectedBill.isClosed" name="closeInd">
+            </div>
+          </div>
+          </fieldset>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="modifyBill(selectedBill)" ng-disabled='frmModgrp.$invalid || selectedBill.isClosedOld'>Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+
+
+  <div id="AddNewBill" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Add New Bill</h4>
+        </div>
+        <form name="frmAddBill" ng-submit="frmAddCo.$valid && submitForm(frmAddBill.$valid)" novalidate role='form'>
+          <div class="modal-body">
+            <table>
+              <tr>
+                 <td width="80px">Bill No : </td>
+                 <td width="100px"><input class="form-control" ng-model="selectedBill.BILL_NO" name="billno" required disabled></td>
+                 <td width="50px">  </td>
+                 <td width="100px">Bill Date : </td>
+                 <td width="100px"><input type="date" class="form-control" ng-model="selectedBill.selectedbillDt"  name="billdt" required ></td>
+                 <td width="200px"> </td>
+              </tr>
+              <tr>
+                 <td width="80px">Party Code :</td>
+                 <td width="100px"><input class="form-control" ng-model="selectedBill.AC_CODE" name="partyid" ng-blur="getSelectedPrtName(selectedBill.AC_CODE)" required></td>
+                 <td width="50px">  </td>
+                 <td width="100px">Party Name </td>
+                 <td colspan="2" width="300px"><input list="Partylist" class="form-control" ng-model="selectedBill.AC_NAME" ng-blur="getSelectedPrtID(selectedBill.AC_NAME , 'Add')" name="partynm" required></td>
+                  <datalist id="Partylist" >
+                      <option ng-repeat="m in partylist">[[m.AC_NAME]]</option> 
+                  </datalist>
+              </tr>
+              <tr>
+                 <td width="80px">Bill For the Year :</td>
+                 <td width="100px">
+                    <select class="selectpicker form-control"  ng-model="selectedBill.BILL_FOR_YEAR" name="billforyear" required>
+                        <option ng-repeat="year in yearlist">[[year.YEAR]]</option>
+                    </select>
+                 </td>
+                 <td width="50px">  </td>
+                 <td width="100px">Comments </td>
+                 <td cospan="2" width="300px">
+                   <input class="form-control" ng-model="selectedBill.REMARK" name="billremarks" >
+                  </td>
+              </tr>
+            </table>
+            <hr>
+            <table id="billdataTable" border="1" >
+              <thead class="billtblheader" >
+                <tr class="info">
+                  <th width="50px">Line</th>
+                  <th width="50px" ng-show="No">Trcd</th>
+                  <th width="150px">Transaction</th>
+                  <th width="70px" ng-show="No">Subcd</th>
+                  <th width="250px">Sub-Transaction Descr</th>
+                  <th width="250px">Remarks</th>
+                  <th width="100px">Amount</th>
+                  <th width="100px">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="billtblbody" >
+                <tr ng-repeat="transact in selectedBillTran">
+                  <td width="50px"><label id="idx">[[selectedBillTran.indexOf(transact) + 1]]</label></td>
+                  <td width="50px" ng-show="No"><input class="form-control" ng-model="transact.TRCD" name="TrcdId" ng-change="updaterowsubcdlist(transact.TRCD)" disabled></td>
+                  <td width="150px"><input list="Trcdlist" class="form-control" ng-model="transact.TRCDDESC" ng-blur="getTRCDID(transact.TRCDDESC, $index)" ng-disabled="transact.TRCD=='OST'" name="trcddesc">
+                  <datalist id="Trcdlist" >
+                      <option ng-repeat="t in trcdlist">[[t.TRCDDESC]]</option> 
+                  </datalist>
+                  </td>
+                  <td width="70px" ng-show="Yes"><input class="form-control" ng-model="transact.SUBCD" name="trcd"></td>
+                  <td width="250px"><input list="Subcdlist" class="form-control" ng-model="transact.SUBDESC" ng-focus="updaterowsubcdlist(transact.TRCD)" ng-blur="getSUBCDID(transact.SUBDESC, transact.TRCD, $index)" ng-disabled="transact.TRCD=='OST'" name="trcdsub">
+                  <datalist id="Subcdlist" >
+                      <option ng-repeat="s in rowsubcdlist">[[s.TRCDSUBDESC]]</option> 
+                  </datalist>
+                  </td>
+                  <td width="250px"><input class="form-control" ng-model="transact.REMARKS" name="trcd" ng-disabled="transact.TRCD=='OST'"></td>
+                  <td width="100px" align="right"><input type="number" style="text-align:right;" class="form-control"  ng-model="transact.BILL_AMT" ng-disabled="transact.TRCD=='OST'" ng-change="getBillTotal()" ></td>
+                  <td width="100px">
+                    <button type="button" ng-click="addBillline(transact)"  class="btn btn-sm btn-danger" >
+                      <i class="glyphicon glyphicon-plus"></i>
+                    </button>
+                    <button type="button" ng-click="removeBillline(transact, $index)"  class="btn btn-sm btn-danger" >
+                      <i class="glyphicon glyphicon-minus"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot class="billtblfoot">
+                <tr>
+                  <td colspan="6" width="650px" align="right">Total : </td>
+                  <td width="100px" align="right"><input type="number" style="text-align:right;" class="form-control" ng-model="transactionTotal" disabled></td>
+                  <td width="100px"></td>
+                </tr>
+              </tfoot>
+            </table>
+    <!--  
+            <div class="form-group">
+              Bill Closed ? <input type="checkbox" ng-model="bill.CLIND" name="closeInd">
+            </div>
+    -->
+          </div>
+          
+            <div>
+                <img id="imageQRCode2" crossorigin="anonymous" src="{{apiURL}}/img/payments/002.jpeg" style='display:none'>
+            </div>
+            <div>
+                <img id="imageQRCode3" crossorigin="anonymous" src="{{apiURL}}/img/payments/003.jpeg" style='display:none'>
+            </div>          
+            <div>
+              <img id="imageQRCode5" crossorigin="anonymous" src="{{apiURL}}/img/payments/005.jpeg" style='display:none'>
+            </div>          
+            <div>
+              <img id="imageQRCode6" crossorigin="anonymous" src="{{apiURL}}/img/payments/006.jpeg" style='display:none'>
+            </div>
+            <div>
+              <img id="imageQRCode7" crossorigin="anonymous" src="{{apiURL}}/img/payments/007.jpeg" style='display:none'>
+            </div>
+            <div>
+              <img id="imageQRCodeblank" crossorigin="anonymous" src="{{apiURL}}/img/payments/blank.jpg" style='display:none'>
+            </div>          
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="registerNewbill(selectedBill)" ng-disabled='frm.$invalid'>Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+
+<!--  
+<div id="Billprint">[[Data]]</div>
+-->
+  
+
+</div><!-- /.col-sm-12 -->
+</div> <!-- controller div -->
+
+

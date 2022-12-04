@@ -1,0 +1,57 @@
+<div  ng-controller='UserListCntrl'>
+  <div class="page-header" >
+    <h1>User Profile</h1>
+  </div>
+
+<table border="0" align="center">
+  <tr>
+    <td  style="margin: 10px; padding: 5px; width:400px">
+
+  <div class="row" usernm="{{{user.username}}}">
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+            {{#if user}}
+              <h3 class="panel-title">Change Profile for : {{{user.USERID}}}</h3>
+            {{else}}
+              <h3 class="panel-title">Profile</h3>
+            {{/if}}
+        </div>
+      <div class="panel-body" >
+        <form name="frmEditUser" ng-submit="EditUser.$valid && submitForm(EditUser.$valid)" novalidate role='form'>
+          <div class="modal-body">
+              <div class="form-group">
+                <label>User Name</label>
+                <input type="text" class="form-control" ng-model="edituser.USER_NAME" placeholder="User Name" name="username" required>
+                <span ng-show="EditUser.username.$dirty && frm.username.$error.required">User Name is required !</span>
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" class="form-control" ng-model="edituser.USER_EMAIL" placeholder="Email" name="email" required>
+                <span ng-show="frm.email.$dirty && frm.email.$error.required">email is required !</span>
+                <span ng-show="frm.email.$dirty && frm.email.$error.email">not an email !</span>
+              </div>
+              <div class="form-group">
+                <label>Role</label>
+                <select class="selectpicker form-control" ng-model="edituser.ROLE" name="role" >
+                  <option>Guest</option>
+                  <option>Client</option>
+                  <option>Admin</option>
+                  <option selected>Data Entry</option>
+                  <option>Master Entry</option>                      
+                </select>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="modifyUpdateUser(edituser)" ng-disabled='frmEditUser.$invalid'>Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form> 
+      </div>
+    </div>
+
+    </td>
+  </tr>
+</table>
+
+</div> <!-- controller div -->
+

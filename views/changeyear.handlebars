@@ -1,0 +1,35 @@
+<div  ng-controller='UserListCntrl'>
+  <div class="page-header" >
+    <h1>Change Year</h1>
+  </div>
+
+<table border="0" align="center">
+  <tr>
+    <td  style="margin: 10px; padding: 5px;"><center>
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title"><center>Change Year</center></h3>
+        </div>
+        <form name="frmModyear" ng-submit="frmModyear.$valid && submitForm(frmModyear.$valid)" novalidate role='form'>
+          <div class="panel-body">
+              <div class="form-group" style="width:400px">
+                <label>Year</label>
+              
+                <select class="selectpicker form-control"  ng-model="NewYear" name="newyr" required>
+                    <option ng-repeat="year in yearlist">[[year.YEAR]]</option>
+                </select>
+              </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="changeCurrentYear(NewYear, 'change')" ng-disabled='frmModyear.$invalid'>Save</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="changeCurrentYear(NewYear, 'cancel')">Cancel</button>
+            </div>
+          </div>
+        </form> 
+      </div>
+    </td>
+  </tr>
+</table>
+
+</div> <!-- controller div -->
+

@@ -1,0 +1,89 @@
+<div  ng-controller='osCntrl'>
+<feesapp-page-header></feesapp-page-header>
+<ul class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="/menus/menuReports">Reports</a></li>
+  <li>outstandings</li>
+</ul>
+
+<div ng-hide="pageDataLoaded" id="loader"></div>
+
+<table ng-cloak border="0" align="center">
+  <tr>
+    <td  style="margin: 10px; padding: 5px;"><center>
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title"><center>Print Outstandings Register</center></h3>
+        </div>
+        <form ng-cloak name="frmModyear" ng-submit="frmModyear.$valid && submitForm(frmModyear.$valid)" novalidate role='form'>
+          <div ng-cloak class="panel-body">
+              <div class="form-group" style="width:500px">
+              <div class="form-group">
+                  Outstandings only till current year : <input type="checkbox" ng-model="onlyTillCurrentYear" name="tillCurrentYr" ng-click="refreshData()">
+              </div>
+                <label>Company Options</label>
+                <select class="selectpicker form-control" ng-model="CompanyOption" required>
+                  <option ng-selected="true"  value="1" >All Companies</option>
+                  <option value="2">Current Company</option>
+                </select>                
+              </div>
+              <div class="form-group" style="width:500px">
+                <label>Options</label>
+                <select class="selectpicker form-control" ng-model="ReportOption" required>
+                  <option ng-selected="true"  value="1" >All Groups</option>
+                  <option value="2">Specific Group</option>
+                </select>                
+              </div>
+              <div ng-cloak id="groupoption" class="form-group" style="width:500px" ng-show="ReportOption == '2'">
+                <table ng-cloak id="FeesAppTable" class="table table-bordered table-hover table-sm" >
+                  <thead class="datatblheader" >
+                    <tr class="info">
+                      <th width="50px"><a href="#" ng-click="selectAllBills()"><span class="glyphicon glyphicon-check"></span></a></th>
+                      <th width="200px">
+                        <a href="#" ng-click="orderByMe('GRP_CODE')">
+                         Group ID 
+                          <span ng-show="sortColumn == 'GRP_CODE' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+                          <span ng-show="sortColumn == 'GRP_CODE' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+                        </a>
+                      </th>
+                      <th width="300px">
+                        <a href="#" ng-click="orderByMe('GRP_NAME')">
+                         Group Name 
+                          <span ng-show="sortColumn == 'GRP_NAME' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+                          <span ng-show="sortColumn == 'GRP_NAME' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+                        </a>
+                      </th>
+                    </tr>
+                    <tr class="active">
+                      <td width="50px"></td>
+                      <th width="200px">
+                        <input ng-model="search.GRP_CODE"  placeholder="search for Group Id" class="input-sm form-control" type="search"/>
+                      </th>
+                      <th width="300px">
+                        <input ng-model="search.GRP_NAME"  placeholder="search for Group name" class="input-sm form-control" type="search"/>
+                      </th>
+                    </tr>  
+                  </thead>
+                  <tbody ng-cloak class="datatblbody">
+                    <tr ng-cloak line-height:"25px;" class="warning" ng-repeat="group in grouplist | orderBy:sortColumn:sortReverse | filter:{GRP_CODE: search.GRP_CODE, GRP_NAME: search.GRP_NAME }">
+                      <td width="50px"><input type="checkbox" ng-model="group.CHECKED"></td>
+                      <td width="200px">[[group.GRP_CODE]]</td>
+                      <td width="300px">[[group.GRP_NAME]]</td>
+                    </tr>
+                  </tbody>
+                 </table>
+              </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="OSRegExcel()" ng-disabled='frmModyear.$invalid'>Excel Report</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="PrintOSReport()" ng-disabled='frmModyear.$invalid'>Print</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="PrintCancel()">Cancel</button>
+            </div>
+          </div>
+        </form> 
+      </div>
+    </td>
+  </tr>
+</table>
+</div> <!-- controller div -->
+
+

@@ -1,0 +1,50 @@
+<div  ng-controller='BillRegCntrl'>
+<feesapp-page-header></feesapp-page-header>
+<ul class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="/menus/menuReports">Reports</a></li>
+  <li>Bill Register</li>
+</ul>
+<table border="0" align="center">
+  <tr>
+    <td  style="margin: 10px; padding: 5px;"><center>
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title"><center>Print Bill Register</center></h3>
+        </div>
+        <form name="frmModyear" ng-submit="frmModyear.$valid && submitForm(frmModyear.$valid)" novalidate role='form'>
+          <div class="panel-body">
+              <div class="form-group" style="width:400px">
+                <label>Party Option</label>
+                <select class="selectpicker form-control" required>
+                  <option value="1">All Parties</option>
+                  <option value="2">Selected Parties</option>
+                  <option value="3">Specific Group</option>
+                </select>                
+              </div>
+              <div class="form-group" style="width:400px">
+                <label>Party Option</label>
+                <select class="selectpicker form-control"  ng-model="NewYear" name="newyr" >
+                    <option ng-repeat="year in yearlist">[[year.YEAR]]</option>
+                </select>
+              </div>
+            <div class="modal-footer">
+            <!--
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="ExcelBillReg()" ng-disabled='frmModyear.$invalid'>Excel Report</button>
+              -->
+
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="FullBillRegExcel()" ng-disabled='frmModyear.$invalid'>Full Excel Report</button>
+
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="BillRegExcel()" ng-disabled='frmModyear.$invalid'>Excel Report</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="PrintBillReg()" ng-disabled='frmModyear.$invalid'>Print</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="PrintCancel()">Cancel</button>
+            </div>
+          </div>
+        </form> 
+      </div>
+    </td>
+  </tr>
+</table>
+
+</div> <!-- controller div -->
+

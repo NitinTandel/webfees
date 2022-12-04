@@ -1,0 +1,304 @@
+<!--
+<div class="page-header" >
+  <h1>Manage Users</h1>
+</div>
+-->
+
+<div ng-controller='UserListCntrl'>
+<feesapp-page-header></feesapp-page-header>
+
+<div class="col-sm-12" >
+  <div ng-class='([[isRtnMsgErr = "Yes"]]) ? "alert alert-danger" : "alert alert-success" ' >[[rtnMessage]]</div>
+
+  <table id="FeesAppTable" class="table table-bordered table-hover table-sm">
+    <thead class="datatblheader" >
+      <tr class="info">
+        <th width="200px">
+          <a href="#" ng-click="orderByMe('USERID')">
+           User ID 
+            <span ng-show="sortColumn == 'USERID' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'USERID' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="200px">
+          <a href="#" ng-click="orderByMe('USER_NAME')">
+           User Name 
+            <span ng-show="sortColumn == 'USER_NAME' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'USER_NAME' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="300px">
+          <a href="#" ng-click="orderByMe('USER_EMAIL')">
+           Email Id
+            <span ng-show="sortColumn == 'USER_EMAIL' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'USER_EMAIL' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="100px">
+          <a href="#" ng-click="orderByMe('ROLE')">
+           Role
+            <span ng-show="sortColumn == 'ROLE' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'ROLE' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="200px">Actions</th>
+      </tr>
+      <tr class="active">
+        <th width="200px">
+          <input ng-model="search.USERID"  placeholder="search for Userid" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="200px">
+          <input ng-model="search.USER_NAME"  placeholder="search for user name" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="300px">
+          <input ng-model="search.USER_EMAIL" placeholder="search for email" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="100px">
+          <input ng-model="search.ROLE" placeholder="search for role" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="200px">
+          <button class="btn btn-primary" ng-click="addUser()" >Add new user</button>
+        </th>
+      </tr>  
+    </thead>
+    <tbody class="datatblbody">
+      <tr class="warning" ng-repeat="user in userlist | orderBy:sortColumn:sortReverse | filter:{USERID: search.USERID, USER_NAME: search.USER_NAME, USER_EMAIL: search.USER_EMAIL, ROLE: search.ROLE }">
+        <td width="200px">[[user.USERID]]</td>
+        <td width="200px">[[user.USER_NAME]]</td>
+        <td width="300px">[[user.USER_EMAIL]]</td>
+        <td width="100px">[[user.ROLE]]</td>
+        <td width="200px">
+            <button type="button" ng-click="removeUser(user)"  class="btn btn-sm btn-danger" >
+              <i class="glyphicon glyphicon-trash"></i>
+            </button>
+            <button type="button" ng-click="editUser(user)"  class="btn btn-sm btn-danger" >
+              <i class="glyphicon glyphicon-pencil"></i>
+            </button>
+            <button type="button" ng-click="changePwd(user)" class="btn btn-sm btn-danger" >
+              <i class="glyphicon glyphicon-asterisk"></i>
+            </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+
+  <div id="DeleteUser" class="modal fade" role="dialog" tabindex="-1"  aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 id="DelformHdr" class="modal-title">Delete User </h4>
+        </div>
+        <form name="frm1" ng-submit="frm1.$valid && submitForm(frm1.$valid)" novalidate role='form'>
+          <div class="modal-body">
+              <div class="form-group">
+                <label id="Delfromlbl">Are you sure to delete the user : [[deleteUSERID]] </label>
+              </div>
+              <div id="hiddenvar" ng-hide="true">
+                <label id="rowind"> [[currentIndex]] </label>
+              </div>
+          </div>    
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="deleteUser(deleteUSERID, currentIndex)">Delete</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="ChangePass" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Change Password for [[cpwd.USERID]]</h4>
+        </div>
+        <form name="frmcpwd" ng-submit="frmcpwd.$valid && submitForm(frmcpwd.$valid)" novalidate role='form'>
+          <div class="modal-body">
+              <div class="form-group">
+                <label>User ID</label>
+                <input type="text" class="form-control" ng-model="cpwd.USERID" placeholder="User Id" name="userid" disabled>
+              </div>
+              <div class="form-group">
+                <label>New Password</label>
+                <input type="password" class="form-control" placeholder="Password" name="Password" ng-model="cpwd.cPwd1" ng-change="UpdtcPass(cpwd.cPwd1)" required>
+                <span ng-show="frmcpwd.Password.$dirty && frmcpwd.Password.$error.required">Password is required !</span>
+              </div>
+
+              <div id="Temp" ng-show="false">
+                <input type="password" name="Password1" ng-model="confirmPassword" >
+              </div>
+
+              <div class="form-group">
+                <label>Confirm New Password</label>
+                <input type="password" class="form-control" placeholder="Verify Password" name="Password2" ng-model="cpwd.cPwd2" compare-to="confirmPassword" required>
+                <span ng-show="frmcpwd.Password2.$dirty && frmcpwd.Password2.$error.required">Confirm Password is required !</span>
+                <span ng-show="frmcpwd.Password2.$dirty && frmcpwd.Password2.$error.compareTo">Passwords do not match !</span>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="updateUserPwd(cpwd)" ng-disabled='frmcpwd.$invalid'>Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+
+  <div id="EditUser" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modify User</h4>
+        </div>
+        <form name="frmEditUser" ng-submit="EditUser.$valid && submitForm(EditUser.$valid)" novalidate role='form'>
+          <div class="modal-body">
+              <div class="form-group">
+                <label>User ID</label>
+                <input type="text" class="form-control" ng-model="edituser.USERID" placeholder="User Id" name="userid" disabled >
+              </div>
+              <div class="form-group">
+                <label>User Name</label>
+                <input type="text" class="form-control" ng-model="edituser.USER_NAME" placeholder="User Name" name="username" required>
+                <span ng-show="EditUser.username.$dirty && frm.username.$error.required">User Name is required !</span>
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" class="form-control" ng-model="edituser.USER_EMAIL" placeholder="Email" name="email" required>
+                <span ng-show="frm.email.$dirty && frm.email.$error.required">email is required !</span>
+                <span ng-show="frm.email.$dirty && frm.email.$error.email">not an email !</span>
+              </div>
+              <div class="form-group">
+                <label>Role</label>
+                <select class="selectpicker form-control" ng-model="edituser.ROLE" name="role" >
+                  <option>Guest</option>
+                  <option>Client</option>
+                  <option>Admin</option>
+                  <option selected>Data Entry</option>
+                  <option>Master Entry</option>                      
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Default Company</label>
+                <select class="selectpicker form-control" ng-model="edituser.selectedCOName">
+                    <option ng-repeat="company in companylist" ng-selected="company.CO_CODE==edituser.DEFAULT_CO">[[company.COMPANY]]</option>
+                </select>
+              </div>
+
+<!--
+               <div>[[edituser.DEFAULT_YEAR]]</div> 
+              <div class="form-group" >
+                <label>Default Year</label>
+                <select class="selectpicker form-control"
+                      ng-model="edituser.DEFAULT_YEAR" 
+                      ng-options="year.YEAR for year in yearlist" >
+                </select>
+              </div>
+-->
+              <div class="form-group" >
+                <label>Default Year</label>
+                <select class="selectpicker form-control" ng-model="edituser.DEFAULT_YEAR">
+                    <option ng-repeat="year in yearlist" ng-selected="year.YEAR==edituser.DEFAULT_YEAR">[[year.YEAR]]</option>
+                </select>
+              </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="modifyUpdateUser(edituser)" ng-disabled='frmEditUser.$invalid'>Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+
+
+  <div id="AddNewUser" class="modal fade" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Add New User</h4>
+        </div>
+        <form name="frm" ng-submit="frm.$valid && submitForm(frm.$valid)" novalidate role='form'>
+          <div class="modal-body">
+              <div class="form-group">
+                <label>User ID * </label>
+                <input type="text" class="form-control" ng-model="user.userid" placeholder="User Id" name="userid" required>
+                <span ng-show="frm.userid.$dirty && frm.userid.$error.required">UserID is required !</span>
+              </div>
+              <div class="form-group">
+                <label>User Name</label>
+                <input type="text" class="form-control" ng-model="user.username" placeholder="User Name" name="username" required>
+                <span ng-show="frm.userid.$dirty && frm.userid.$error.required">User Name is required !</span>
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" class="form-control" ng-model="user.email" placeholder="Email" name="email" required>
+                <span ng-show="frm.email.$dirty && frm.email.$error.required">email is required !</span>
+                <span ng-show="frm.email.$dirty && frm.email.$error.email">not an email !</span>
+              </div>
+              <div class="form-group">
+                <label>Role</label>
+                <select class="selectpicker form-control" ng-model="user.role" name="role" >
+                  <option>Guest</option>
+                  <option>Client</option>
+                  <option>Admin</option>
+                  <option selected>Data Entry</option>
+                  <option>Master Entry</option>                      
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Password</label>
+                <input type="password" class="form-control" placeholder="Password" name="Password" ng-model="user.password" ng-change="UpdtcPass(user.password)" required>
+                <span ng-show="frm.Password.$dirty && frm.Password.$error.required">Password is required !</span>
+              </div>
+
+              <div id="Temp2" ng-show="false">
+                <input type="password" name="Password11" ng-model="confirmPassword" >
+              </div>
+
+              <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" class="form-control" placeholder="Verify Password" name="Password2" ng-model="user.password2" compare-to="confirmPassword" required>
+                <span ng-show="frm.password2.$dirty && frm.password2.$error.required">Confirm Password is required !</span>
+                <span ng-show="frm.password2.$dirty && frm.password2.$error.compareTo">Passwords do not match !</span>
+              </div>
+
+              <div class="form-group">
+                <label>Default Company</label>
+                <select class="selectpicker form-control" ng-model="selectedComp" 
+                      ng-options="company as company.COMPANY for company in companylist" >
+                </select>
+              </div>
+
+              <div class="form-group" >
+                <label>Default Year</label>
+                <select class="selectpicker form-control" ng-model="defaultYear" 
+                      ng-options="year as year.YEAR for year in yearlist" >
+                </select>
+              </div>
+
+              <div id="Temp3" ng-show="false">
+                <input type="text" name="dCo" ng-model="defaultCoID" value="[[selectedComp.CO_CODE]]" >
+              </div>
+
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="registerNewUser(user)" ng-disabled='frm.$invalid'>Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+
+</div><!-- /.col-sm-12 -->
+</div> <!-- controller div -->

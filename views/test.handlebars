@@ -1,0 +1,33 @@
+<h2 class="page-header"><center>test</h2>
+<!-- Large modal -->
+
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#Nitin">Large modal</button>
+
+
+<!-- Small modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#Sunil">Small modal</button>
+
+
+<div id="Sunil" class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+  <form name="frm" ng-submit="testForm.$valid && submitForm(frm.$valid)" novalidate role='form'>
+
+    <div class="modal-content">
+      ...
+    </div>
+  </form>  
+  </div>
+</div>
+
+
+<div id="Nitin" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+  <form name="frm" ng-submit="testForm.$valid && submitForm(frm.$valid)" novalidate role='form'>
+
+    <div class="modal-content">
+      ...
+    </div>
+    </form>
+  </div>
+</div>

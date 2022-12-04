@@ -1,0 +1,254 @@
+<div ng-controller='rcptCntrl'>
+<feesapp-page-header></feesapp-page-header>
+<ul class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="/menus/menuTrans">Transactions</a></li>
+  <li>Enter Receipts</li>
+</ul>
+
+<div ng-hide="pageDataLoaded" id="loader"></div>
+
+<div ng-cloak class="col-sm-12">
+  <form name="frmModbill"  novalidate > 
+  <div class="form-group">
+      Show only outstanding Bills <input type="checkbox" ng-model="osOnlyBills" name="OSOnly" ng-click="refreshData()">
+  </div>
+  <table ng-cloak id="FeesAppTable" class="table table-bordered table-hover table-sm" >
+    <thead class="datatblheader" >
+      <tr class="info">
+        <th width="50px">X</th>
+        <th width="100px">
+          <a href="#" ng-click="orderByMe('GRP_CODE')">
+           Group 
+            <span ng-show="sortColumn == 'GRP_CODE' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'GRP_CODE' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="100px">
+          <a href="#" ng-click="orderByMe('AC_CODE')">
+           Party id 
+            <span ng-show="sortColumn == 'AC_CODE' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'AC_CODE' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="290px">
+          <a href="#" ng-click="orderByMe('AC_NAME')">
+           Party Name 
+            <span ng-show="sortColumn == 'AC_NAME' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'AC_NAME' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="90px">
+          <a href="#" ng-click="orderByMe('BILL_STR')">
+           Bill No 
+            <span ng-show="sortColumn == 'BILL_STR' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'BILL_STR' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="100px">
+          <a href="#" ng-click="orderByMe('BILL_DT')">
+           Bill Date 
+            <span ng-show="sortColumn == 'BILL_DT' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'BILL_DT' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="120px">
+          <a href="#" ng-click="orderByMe('TOT_AMT')">
+           Bill Amount 
+            <span ng-show="sortColumn == 'TOT_AMT' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'TOT_AMT' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="120px" align="Right">
+          <a href="#" ng-click="orderByMe('RCPT_AMT')">
+           Received 
+            <span ng-show="sortColumn == 'RCPT_AMT' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'RCPT_AMT' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="120px" align="Right">
+          <a href="#" ng-click="orderByMe('TDS_AMT')">
+           TDS 
+            <span ng-show="sortColumn == 'TDS_AMT' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'TDS_AMT' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="115px" align="Right">
+          <a href="#" ng-click="orderByMe('BAL_AMT')" >
+           Balance 
+            <span ng-show="sortColumn == 'BAL_AMT' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'BAL_AMT' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="90px">
+          <a href="#" ng-click="orderByMe('CLIND')">
+           Closed 
+            <span ng-show="sortColumn == 'CLIND' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'CLIND' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+
+      </tr>
+      <tr class="active">
+        <th width="50px"></th>
+        <th width="100px">
+          <input ng-model="search.GRP_CODE"  placeholder="search Group Code" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="100px">
+          <input ng-model="search.AC_CODE"  placeholder="search Party Code" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="290px">
+          <input ng-model="search.AC_NAME"  placeholder="search Party name" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="90px">
+          <input ng-model="search.BILL_STR"  placeholder="search Bill No" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="100px">
+          <input ng-model="search.BILL_DT"  placeholder="search Bill Date" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="120px">
+          <input ng-model="search.TOT_AMT"  placeholder="search Amount" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="120px">
+          <input align="Right" ng-model="search.RCEPT_AMT"  placeholder="search Amount" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="120px">
+          <input align="Right" ng-model="search.TDS_AMT"  placeholder="search Amount" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="115px">
+          <input align="Right" ng-model="search.BAL_AMT"   class="input-sm form-control" type="search"/>
+        </th>
+        <th width="90px">
+          <input ng-model="search.CLIND"   class="input-sm form-control" type="search"/>
+        </th>
+
+      </tr>  
+    </thead>
+    <tbody class="datatblbody">
+      <tr class="warning" ng-repeat="bill in billslist | orderBy:sortColumn:sortReverse | filter:{GRP_CODE: search.GRP_CODE, AC_CODE: search.AC_CODE, AC_NAME: search.AC_NAME, BILL_STR: search.BILL_STR, BILL_DT: search.BILL_DT, TOT_AMT:search.TOT_AMT, RCPT_AMT:search.RCPT_AMT, BAL_AMT: search.BAL_AMT }" ng-dblclick="enterReceipts(bill)">
+        <td width="50px"><input type="checkbox" ng-model="bill.CHECKED"></td>
+        <td width="100px" class="handpointer">[[bill.GRP_CODE]]</td>
+        <td width="100px" class="handpointer">[[bill.AC_CODE]]</td>
+        <td width="290px" class="handpointer">[[bill.AC_NAME]]</td>
+        <td width="90px" class="handpointer">[[bill.BILL_STR]]</td>
+        <td width="100px" class="handpointer">[[bill.BILL_DT]]</p?</td>
+        <td width="120px" align="Right" class="handpointer">[[bill.TOT_AMT]]</td>
+        <td width="120px" align="Right" class="handpointer">[[bill.RCPT_AMT]]</td>
+        <td width="120px" align="Right" class="handpointer">[[bill.TDS_AMT]]</td>
+        <td width="115px" align="Right" class="handpointer">[[bill.BAL_AMT]]</td>
+        <td width="75px" align="Center" class="handpointer">[[bill.CLIND]]</td>
+      </tr>
+    </tbody>
+  </table>
+  </form>
+
+<div class="webfeesfooter">
+  <div ng-class='rtnMessageColor'>[[rtnMessage]]</div>
+</div>
+
+  <div id="EditReceipt" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Enter Receipts</h4>
+          </div>
+        <form name="frmModbill" ng-submit="frmModbill.$valid && submitForm(frmModbill.$valid)" novalidate role='form'> 
+          <fieldset ng-disabled="LockedforEdit">
+          <div class="modal-body">
+            <table>
+              <tr>
+                 <td width="80px">Bill No : </td>
+                 <td width="100px"><input class="form-control" ng-model="selectedBill.BILL_NO" name="billno" required disabled></td>
+                 <td width="50px">  </td>
+                 <td width="100px">Bill Date : </td>
+                 <td width="100px"><input type="date" class="form-control" ng-model="selectedBill.selectedbillDt" name="billdt" required disabled ></td>
+                 <td width="200px"> </td>
+              </tr>
+              <tr>
+                 <td width="80px">Party Code :</td>
+                 <td width="100px"><input class="form-control" ng-model="selectedBill.AC_CODE" name="partyid" required disabled></td>
+                 <td width="50px">  </td>
+                 <td width="100px">Party Name </td>
+                 <td colspan="2" width="300px"><input list="Partylist" class="form-control" ng-model="selectedBill.AC_NAME"  name="partynm" required disabled></td>
+              </tr>
+              <tr>
+                 <td width="80px"> </td>
+                 <td width="100px"> </td>
+                 <td width="50px">  </td>
+                 <td width="100px">Total Bill Amount </td>
+                 <td width="100px"><input type="number" style="text-align:right;" class="form-control"  ng-model="selectedBill.TOT_AMT" disabled></td>
+                 <td width="200px"> </td>
+              </tr>
+            </table>
+            <hr>
+            <table>
+              <tr>
+                 <td width="100px">Receipt Date : </td>
+                 <td width="100px"><input type="date" class="form-control" ng-model="selectedBill.RcptDt1" name="Rdt1" ></td>
+                 <td width="30px">  </td>
+                 <td width="150px">Cash Receipt : </td>
+                 <td width="100px"><input type="number" style="text-align:right;" class="form-control"  ng-model="selectedBill.CASH1" ng-change="getRcptTotal()" ng-disabled="!isValidDate(selectedBill.RcptDt1)"></td>
+                 <td width="150px"> </td>
+              </tr>
+              <tr>
+                 <td width="100px">  </td>
+                 <td width="100px">  </td>
+                 <td width="30px">  </td>
+                 <td width="150px">Cheque Receipt : </td>
+                 <td width="100px"><input type="number" style="text-align:right;" class="form-control"  ng-model="selectedBill.CHEQUE1" ng-change="getRcptTotal()" ng-disabled="!isValidDate(selectedBill.RcptDt1)"></td>
+                 <td width="150px"> </td>
+              </tr>
+              <tr>
+                 <td width="100px">Receipt Date : </td>
+                 <td width="100px"><input type="date" class="form-control" ng-model="selectedBill.RcptDt2" name="Rdt2" ></td>
+                 <td width="30px">  </td>
+                 <td width="150px">Cash Receipt : </td>
+                 <td width="100px"><input type="number" style="text-align:right;" class="form-control"  ng-model="selectedBill.CASH2" ng-change="getRcptTotal()" ng-disabled="!isValidDate(selectedBill.RcptDt2)"></td>
+                 <td width="150px"> </td>
+              </tr>
+              <tr>
+                 <td width="100px">  </td>
+                 <td width="100px">  </td>
+                 <td width="30px">  </td>
+                 <td width="150px">Cheque Receipt : </td>
+                 <td width="100px"><input type="number" style="text-align:right;" class="form-control"  ng-model="selectedBill.CHEQUE2" ng-change="getRcptTotal()" ng-disabled="!isValidDate(selectedBill.RcptDt2)"></td>
+                 <td width="150px"> </td>
+              </tr>
+              <tr>
+                 <td width="100px">  </td>
+                 <td width="100px">  </td>
+                 <td width="30px">  </td>
+                 <td width="150px">TDS : </td>
+                 <td width="100px"><input type="number" style="text-align:right;" class="form-control"  ng-model="selectedBill.TDS_AMT" ng-change="getRcptTotal()" ></td>
+                 <td width="150px"> </td>
+              </tr>
+              <tr style="border-top:1pt solid black;">
+                 <td width="100px">Balance Amount : </td>
+                 <td width="100px"><input type="number" style="text-align:right;" class="form-control"  ng-model="selectedBill.BAL_AMT" disabled></td>
+                 <td width="30px">  </td>
+                 <td width="150px">Total Receipt : </td>
+                 <td width="100px"><input type="number" style="text-align:right;" class="form-control"  ng-model="selectedBill.RCPT_AMT" disabled></td>
+                 <td width="150px"> </td>
+              </tr>
+            </table>
+            <hr>
+            <div class="form-group">
+              Bill Closed ? <input type="checkbox" ng-model="selectedBill.isClosed" name="closeInd">
+            </div>
+          </div>
+          </fieldset>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" ng-show="LockedforEdit && CurrentRole=='Admin'" ng-click="allowEdit()">Edit Closed Receipts</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="modifyReceipt(selectedBill)" ng-disabled='frmModgrp.$invalid '>Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+</div><!-- /.col-sm-12 -->
+</div> <!-- controller div -->
+
+

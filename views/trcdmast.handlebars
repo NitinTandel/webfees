@@ -1,0 +1,150 @@
+<div ng-controller='trcdCntrl'>
+<feesapp-page-header></feesapp-page-header>
+<ul class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="/menus/menuMasters">Masters Menu</a></li>
+  <li>Transaction codes</li>
+</ul>
+
+<div ng-hide="pageDataLoaded" id="loader"></div>
+
+<div ng-cloak class="col-sm-12">
+  <table ng-cloak id="FeesAppTable" class="table table-bordered table-hover table-sm" >
+    <thead class="datatblheader" >
+      <tr class="info">
+        <th width="200px">
+          <a href="#" ng-click="orderByMe('TRCD')">
+           Transaction ID 
+            <span ng-show="sortColumn == 'TRCD' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'TRCD' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="300px">
+          <a href="#" ng-click="orderByMe('DESC')">
+           Description 
+            <span ng-show="sortColumn == 'DESC' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'DESC' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="200px">Actions</th>
+      </tr>
+      <tr class="active">
+        <th width="200px">
+          <input ng-model="search.TRCD"  placeholder="search for Transaction Id" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="300px">
+          <input ng-model="search.DESC"  placeholder="search for Description" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="200px">
+          <button class="btn btn-primary" ng-click="addTrcd()" >Add Transaction Code</button>
+        </th>
+      </tr>  
+    </thead>
+    <tbody class="datatblbody">
+      <tr class="warning" ng-repeat="trcd in trcdlist | orderBy:sortColumn:sortReverse | filter:{TRCD: search.TRCD, DESC: search.DESC }">
+        <td width="200px">[[trcd.TRCD]]</td>
+        <td width="300px">[[trcd.DESC]]</td>
+        <td width="200px">
+            <button type="button" ng-click="removeTrcd(trcd)"  class="btn btn-sm btn-danger" >
+              <i class="glyphicon glyphicon-trash"></i>
+            </button>
+            <button type="button" ng-click="editTrcd(trcd)"  class="btn btn-sm btn-danger" >
+              <i class="glyphicon glyphicon-pencil"></i>
+            </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+<div class="webfeesfooter">
+  <div ng-class='rtnMessageColor'>[[rtnMessage]]</div>
+</div>
+
+
+  <div id="DeleteTrcd" class="modal fade" role="dialog" tabindex="-1"  aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 id="DelformHdr" class="modal-title">Delete Transaction Code</h4>
+        </div>
+        <form name="frmDeltrcd" ng-submit="frmDeltrcd.$valid && submitForm(frmDeltrcd.$valid)" novalidate role='form'>
+          <div class="modal-body">
+              <div class="form-group">
+                <label id="Delfromlbl">Are you sure to delete Transaction Code : [[selectedTrcd.TRCD]] : [[selectedTrcd.DESC]] </label>
+              </div>
+              <div id="hiddenvar" ng-hide="true">
+                <label id="rowind"> [[currentIndex]] </label>
+              </div>
+          </div>    
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="deleteTrcd(selectedTrcd.TRCD, currentIndex)">Delete</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="EditTrcd" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modify Transaction Code</h4>
+        </div>
+        <form name="frmModtrcd" ng-submit="frmModtrcd.$valid && submitForm(frmModtrcd.$valid)" novalidate role='form'>
+          <div class="modal-body">
+              <div class="form-group">
+                <label>Transaction ID : </label>
+                <input class="form-control" ng-model="selectedTrcd.TRCD" name="trcdid" required disabled>
+              </div>
+              <div class="form-group">
+                <label>Transaction Name* :</label>
+                <input type="text" class="form-control" ng-model="selectedTrcd.DESC" placeholder="Transaction Name" name="trcdname" required>
+                <span ng-show="frmModtrcd.trcdname.$dirty && frmModtrcd.trcdname.$error.required">Transaction Name is required !</span>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="modifyTrcd(selectedTrcd)" ng-disabled='frmModtrcd.$invalid'>Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+
+
+  <div id="AddNewTrcd" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Add New Transaction Code</h4>
+        </div>
+        <form name="frmAddtrcd" ng-submit="frmAddtrcd.$valid && submitForm(frmAddtrcd.$valid)" novalidate role='form'>
+          <div class="modal-body">
+              <div class="form-group">
+                <label>Transaction ID *</label> 
+                <input type="text" class="form-control" ng-model="newtrcd.TRCD" placeholder="Transaction Id" name="trcdid"  required>
+                <span ng-show="frmAddtrcd.trcdid.$dirty && frmAddtrcd.trcdid.$error.required">Transaction ID is required !</span>
+              </div>
+              <div class="form-group">
+                <label>Company Name*</label>
+                <input type="text" class="form-control" ng-model="newtrcd.DESC" placeholder="Transaction Name" name="trcdname" required>
+                <span ng-show="frmAddtrcd.trcdname.$dirty && frmAddtrcd.trcdname.$error.required">Transaction Name is required !</span>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="registerNewTrcd(newtrcd)" ng-disabled='frmAddtrcd.$invalid'>Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+</div><!-- /.col-sm-12 -->
+</div> <!-- controller div -->
+
+

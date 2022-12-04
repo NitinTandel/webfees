@@ -1,0 +1,367 @@
+
+<div ng-controller='companyCntrl'>
+<feesapp-page-header></feesapp-page-header>
+
+<div class="col-sm-12">
+  <div ng-class='rtnMessageColor'>[[rtnMessage]]</div>
+
+
+  <table id="FeesAppTable" class="table table-bordered table-hover table-sm">
+    <thead class="datatblheader" >
+      <tr class="info">
+        <th width="200px">
+          <a href="#" ng-click="orderByMe('CO_CODE')">
+           Company ID 
+            <span ng-show="sortColumn == 'CO_CODE' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'CO_CODE' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="200px">
+          <a href="#" ng-click="orderByMe('COMPANY')">
+           Company Name 
+            <span ng-show="sortColumn == 'COMPANY' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'COMPANY' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="300px">
+          <a href="#" ng-click="orderByMe('EMAIL')">
+           Email Id
+            <span ng-show="sortColumn == 'EMAIL' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'EMAIL' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="100px">
+          <a href="#" ng-click="orderByMe('TEL1')">
+           Phone No
+            <span ng-show="sortColumn == 'TEL1' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'TEL1' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="200px">Actions</th>
+      </tr>
+      <tr class="active">
+        <th width="200px">
+          <input ng-model="search.CO_CODE"  placeholder="search for company Id" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="200px">
+          <input ng-model="search.COMPANY"  placeholder="search for company name" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="300px">
+          <input ng-model="search.EMAIL" placeholder="search for email" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="100px">
+          <input ng-model="search.TEL1" placeholder="search for phone" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="200px">
+          <button class="btn btn-primary" ng-click="addCompany()" >Add Company</button>
+        </th>
+      </tr>  
+    </thead>
+    <tbody class="datatblbody">
+      <tr class="warning" ng-repeat="company in companylist | orderBy:sortColumn:sortReverse | filter:{CO_CODE: search.CO_CODE, COMPANY: search.COMPANY, EMAIL: search.EMAIL, TEL1: search.TEL1 }">
+        <td width="200px">[[company.CO_CODE]]</td>
+        <td width="200px">[[company.COMPANY]]</td>
+        <td width="300px">[[company.EMAIL]]</td>
+        <td width="100px">[[compnay.TEL1]]</td>
+        <td width="200px">
+            <button type="button" ng-click="removeCompany(company)"  class="btn btn-sm btn-danger" >
+              <i class="glyphicon glyphicon-trash"></i>
+            </button>
+            <button type="button" ng-click="editCompany(company)"  class="btn btn-sm btn-danger" >
+              <i class="glyphicon glyphicon-pencil"></i>
+            </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <div id="DeleteCompany" class="modal fade" role="dialog" tabindex="-1"  aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 id="DelformHdr" class="modal-title">Delete Company</h4>
+        </div>
+        <form name="frmDelCo" ng-submit="ffrmDelCo.$valid && submitForm(frmDelCo.$valid)" novalidate role='form'>
+          <div class="modal-body">
+              <div class="form-group">
+                <label id="Delfromlbl">Are you sure to delete the Company : [[selectedCo.CO_CODE]] : [[selectedCo.COMPANY]] </label>
+              </div>
+              <div id="hiddenvar" ng-hide="true">
+                <label id="rowind"> [[currentIndex]] </label>
+              </div>
+          </div>    
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="deleteCompany(deleteCO_ID, currentIndex)">Delete</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="EditCompany" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modify Company</h4>
+        </div>
+        <form name="frmAddCo" ng-submit="frmAddCo.$valid && submitForm(frmAddCo.$valid)" novalidate role='form'>
+          <div class="modal-body">
+            <div class="form-group">
+              <table>
+                <tr>
+                   <td class="col-sm-3"><label class="col-form-label">Company ID * :</label></td>
+                   <td colspan="2" class="col-sm-9"><input type="number" class="form-control" ng-model="selectedCo.CO_CODE" placeholder="Company Id" name="companyid" min="0" max="99" required></td>
+                </tr>            
+                <tr ng-show="frmAddCo.companyid.$dirty && frmAddCo.companyid.$error.required">
+                  <td colspan="3" align="Center">Company ID is required !</td>
+                </tr>
+                <tr>
+                   <td class="col-sm-3"><label class="col-form-label">Co. Name * :</label></td>
+                   <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="selectedCo.COMPANY" placeholder="Company Name" name="companyname" required></td>
+                </tr>
+            </table>
+
+              <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#home">Address Info</a></li>
+                <li><a data-toggle="tab" href="#menu1">Tax Info</a></li>
+                <li><a data-toggle="tab" href="#menu2">Bank Info</a></li>
+                <li><a data-toggle="tab" href="#menu3">Sign Upload</a></li>
+                <li><a data-toggle="tab" href="#menu4">QR code Upload</a></li>
+              </ul>
+              <div class="tab-content">
+                <div id="home" class="tab-pane fade in active">
+                  <p>.</p>
+                  <table>
+                      <tr>
+                        <td class="col-sm-3"><label class="col-form-label">Address:</label></td>
+                        <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="selectedCo.ADD1" placeholder="Address line 1" name="add1"></td>
+                      </tr>
+                      <tr>
+                        <td class="col-sm-3"></td>
+                        <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="selectedCo.ADD2" placeholder="Address line 2" name="add2"></td>
+                      </tr>
+                      <tr>
+                        <td class="col-sm-3"></td>
+                        <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="selectedCo.ADD3" placeholder="Address line 3" name="add3"></td>
+                      </tr>
+                      <tr>
+                        <td class="col-sm-3"></td>
+                        <td class="col-sm-3"><label class="col-form-label">City/Dist:</label></td>
+                        <td class="col-sm-6"><input type="text" class="form-control" ng-model="selectedCo.CITY_DIST" placeholder="City/District" name="citydist"></td>
+                      </tr>
+                      <tr>
+                        <td class="col-sm-3"></td>
+                        <td class="col-sm-3"><label class="col-form-label">State:</label></td>
+                        <td class="col-sm-6"><input type="text" class="form-control" ng-model="selectedCo.STATE" placeholder="State" name="state"></td>
+                      </tr>
+                      <tr>
+                        <td class="col-sm-3"></td>
+                        <td class="col-sm-3"><label class="col-form-label">PINs:</label></td>
+                        <td class="col-sm-6"><input type="text" class="form-control" ng-model="selectedCo.PIN" placeholder="Pin Code" name="pin" ></td>
+                      </tr>
+                      <tr>
+                        <td class="col-sm-3"><label class="col-form-label">Email:</label></td>
+                        <td colspan="2" class="col-sm-9"><input type="email" class="form-control" ng-model="selectedCo.EMAIL" placeholder="Email" name="email" required></td>
+                      </tr>
+                      <tr>
+                        <td class="col-sm-3"><label class="col-form-label">Phone 1:</label></td>
+                        <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="selectedCo.TEL1" placeholder="Phone / mobile 1" name="tel1"></td>
+                      </tr>
+                      <tr>
+                        <td class="col-sm-3"><label class="col-form-label">Phone 2:</label></td>
+                        <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="selectedCo.TEL2" placeholder="Phone / mobile 2" name="tel2"></td>
+                      </tr>
+                  </table>
+                </div>
+                <div id="menu1" class="tab-pane fade">
+                  <p>.</p>
+                  <table>
+                        <tr>
+                          <td class="col-sm-3"><label class="col-form-label">PAN:</label></td>
+                          <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="selectedCo.PAN_NO" placeholder="PAN Number" name="pan"></td>
+                        </tr>
+                        <tr>
+                          <td class="col-sm-3"><label class="col-form-label">GST Applicable:</label></td>
+                          <td colspan="2" class="col-sm-9">
+                              <select name="gstapp" ng-model="selectedCo.GST_APPLICABLE" >
+                                <option value="Y">Yes</option>
+                                <option value="N">No</option>
+                              </select>
+                          </td>
+                        </tr>
+                        <tr ng-show="selectedCo.GST_APPLICABLE == 'Y'">
+                          <td class="col-sm-3"><label class="col-form-label">GST No:</label></td>
+                          <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="selectedCo.GST_NO" placeholder="GST Number" name="gstno"></td>
+                        </tr>
+                  </table>
+                </div>
+                <div id="menu2" class="tab-pane fade">
+                  <p>.</p>
+                  <table>
+                      <tr>
+                        <td class="col-sm-3"><label class="col-form-label">Bank Name:</label></td>
+                        <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="selectedCo.BANK_NAME" placeholder="Bank Name." ></td>
+                      </tr>
+                      <tr>
+                        <td class="col-sm-3"><label class="col-form-label">Account No:</label></td>
+                        <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="selectedCo.AC_NUM" placeholder="Account Number." ></td>
+                      </tr>
+                      <tr>
+                        <td class="col-sm-3"><label class="col-form-label">Account Type:</label></td>
+                        <td colspan="2" class="col-sm-9">
+                            <select name="acctype" ng-model="selectedCo.AC_TYPE" >
+                              <option value="Savings">Savings</option>
+                              <option value="Current">Current</option>
+                            </select>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="col-sm-3"><label class="col-form-label">IFSC Code:</label></td>
+                        <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="selectedCo.IFSC_CODE" placeholder="IFSC Code" ></td>
+                      </tr>
+                      <tr>
+                        <td class="col-sm-3"><label class="col-form-label">MICR Code:</label></td>
+                        <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="selectedCo.MICR" placeholder="MICR Code" ></td>
+                      </tr>
+                  </table>
+                </div>
+                <div id="menu3" class="tab-pane fade">
+                  <p>.</p>
+                  <table>
+                      <tr>
+                        <td class="col-sm-3"><label class="col-form-label">Bank Name:</label></td>
+                        <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="selectedCo.BANK_NAME" placeholder="Bank Name." ></td>
+                      </tr>
+                      <tr>
+                        <td class="col-sm-3"><label class="col-form-label">Account No:</label></td>
+                        <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="selectedCo.AC_NUM" placeholder="Account Number." ></td>
+                      </tr>
+                      <tr>
+                        <td class="col-sm-3"><label class="col-form-label">Account Type:</label></td>
+                        <td colspan="2" class="col-sm-9">
+                            <select name="acctype" ng-model="selectedCo.AC_TYPE" >
+                              <option value="Savings">Savings</option>
+                              <option value="Current">Current</option>
+                            </select>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="col-sm-3"><label class="col-form-label">IFSC Code:</label></td>
+                        <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="selectedCo.IFSC_CODE" placeholder="IFSC Code" ></td>
+                      </tr>
+                      <tr>
+                        <td class="col-sm-3"><label class="col-form-label">MICR Code:</label></td>
+                        <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="selectedCo.MICR" placeholder="MICR Code" ></td>
+                      </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="modifyCompany(selectedCo)" ng-disabled='frm.$invalid'>Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+  <div id="AddNewCompany" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form name="frmAddCo" ng-submit="frmAddCo.$valid && submitForm(frmAddCo.$valid)" novalidate role='form'>
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Add New Company</h4>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <table>
+                <tr>
+                   <td class="col-sm-3"><label class="col-form-label">Company ID * :</label></td>
+                   <td colspan="2" class="col-sm-9"><input type="number" class="form-control" ng-model="company.CO_CODE" placeholder="Company Id" name="companyid" min="0" max="99" required></td>
+                </tr>            
+                <tr ng-show="frmAddCo.companyid.$dirty && frmAddCo.companyid.$error.required">
+                  <td colspan="3" align="Center">Company ID is required !</td>
+                </tr>
+                <tr>
+                   <td class="col-sm-3"><label class="col-form-label">Co. Name * :</label></td>
+                   <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="company.COMPANY" placeholder="Company Name" name="companyname" required></td>
+                </tr>
+                <tr>
+                   <td class="col-sm-3"><label class="col-form-label">Address:</label></td>
+                   <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="company.ADD1" placeholder="Address line 1" name="add1"></td>
+                </tr>
+                <tr>
+                   <td class="col-sm-3"></td>
+                   <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="company.ADD2" placeholder="Address line 2" name="add2"></td>
+                </tr>
+                <tr>
+                   <td class="col-sm-3"></td>
+                   <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="company.ADD3" placeholder="Address line 3" name="add3"></td>
+                </tr>
+                <tr>
+                   <td class="col-sm-3"></td>
+                   <td class="col-sm-3"><label class="col-form-label">City/Dist:</label></td>
+                   <td class="col-sm-6"><input type="text" class="form-control" ng-model="company.CITY_DIST" placeholder="City/District" name="citydist"></td>
+                </tr>
+                <tr>
+                   <td class="col-sm-3"></td>
+                   <td class="col-sm-3"><label class="col-form-label">State:</label></td>
+                   <td class="col-sm-6"><input type="text" class="form-control" ng-model="company.STATE" placeholder="State" name="state"></td>
+                </tr>
+                <tr>
+                   <td class="col-sm-3"></td>
+                   <td class="col-sm-3"><label class="col-form-label">PINs:</label></td>
+                   <td class="col-sm-6"><input type="text" class="form-control" ng-model="company.PIN" placeholder="Pin Code" name="pin" ></td>
+                </tr>
+                <tr>
+                   <td class="col-sm-3"><label class="col-form-label">Email:</label></td>
+                   <td colspan="2" class="col-sm-9"><input type="email" class="form-control" ng-model="company.EMAIL" placeholder="Email" name="email" required></td>
+                </tr>
+                <tr>
+                   <td class="col-sm-3"><label class="col-form-label">Phone 1:</label></td>
+                   <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="company.TEL1" placeholder="Phone / mobile 1" name="tel1"></td>
+                </tr>
+                <tr>
+                   <td class="col-sm-3"><label class="col-form-label">Phone 2:</label></td>
+                   <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="company.TEL2" placeholder="Phone / mobile 2" name="tel2"></td>
+                </tr>
+                <tr>
+                   <td class="col-sm-3"><label class="col-form-label">PAN:</label></td>
+                   <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="company.PAN_NO" placeholder="PAN Number" name="pan"></td>
+                </tr>
+                <tr>
+                   <td class="col-sm-3"><label class="col-form-label">GST Applicable:</label></td>
+                   <td colspan="2" class="col-sm-9">
+                      <select name="gstapp" ng-model="company.GST_APPLICABLE" >
+                        <option value="Y">Yes</option>
+                        <option value="N">No</option>
+                      </select>
+                   </td>
+                </tr>
+                <tr ng-show="company.GST_APPLICABLE == 'Y'">
+                   <td class="col-sm-3"><label class="col-form-label">GST No:</label></td>
+                   <td colspan="2" class="col-sm-9"><input type="text" class="form-control" ng-model="company.GST_NO" placeholder="GST Number" name="gstno"></td>
+                </tr>
+              </table>
+            </div>
+          </div> <!-- close div model-body -->  
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="registerNewCompany(company)" ng-disabled='frm.$invalid'>Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div> <!-- close div model-content -->
+    </div> <!-- close div model-dialog -->
+  </div> <!-- close div Addnew company -->
+
+</div><!-- /.col-sm-12 -->
+</div> <!-- controller div -->
+
+

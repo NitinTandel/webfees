@@ -1,0 +1,448 @@
+<div ng-controller='partyCntrl'>
+<feesapp-page-header></feesapp-page-header>
+<ul class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="/menus/menuMasters">Masters Menu</a></li>
+  <li>Party Masters</li>
+</ul>
+
+<div ng-hide="pageDataLoaded" id="loader"></div>
+
+<div ng-cloak class="col-sm-12">
+  <div class="form-group">
+      Show Inactive Parties : <input type="checkbox" ng-model="showInactive" name="showInactive" ng-click="refreshData()">
+  </div>
+  <table ng-cloak id="FeesAppTable" class="table table-bordered table-hover table-sm" >
+    <thead class="datatblheader" >
+      <tr class="info">
+        <th width="150px">
+          <a href="#" ng-click="orderByMe('GRP_CODE')">
+           Group ID 
+            <span ng-show="sortColumn == 'GRP_CODE' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'GRP_CODE' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="300px">
+          <a href="#" ng-click="orderByMe('GRP_NAME')">
+           Group Name 
+            <span ng-show="sortColumn == 'GRP_NAME' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'GRP_NAME' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="150px">
+          <a href="#" ng-click="orderByMe('AC_CODE')">
+            Party Code 
+            <span ng-show="sortColumn == 'AC_CODE' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'AC_CODE' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="300px">
+          <a href="#" ng-click="orderByMe('AC_NAME')">
+           Party Name 
+            <span ng-show="sortColumn == 'AC_NAME' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'AC_NAME' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="200px">Actions</th>
+      </tr>
+      <tr class="active">
+        <th width="150px" style="height:10px;vertical-align:middle;">
+          <input ng-model="search.GRP_CODE"  placeholder="search for Group Id" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="300px" style="height:10px;vertical-align:middle;">
+          <input ng-model="search.GRP_NAME"  placeholder="search for Group Name" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="150px" style="height:10px;vertical-align:middle;">
+          <input ng-model="search.AC_CODE"  placeholder="search for Party Id" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="300px" style="height:10px;vertical-align:middle;">
+          <input ng-model="search.AC_NAME"  placeholder="search for Party name" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="200px" style="height:10px;vertical-align:middle;">
+          <button class="btn btn-primary" ng-click="addParty()" >Add Party</button>
+        </th>
+      </tr>  
+    </thead>
+    <tbody class="datatblbody">
+      <tr class="warning" ng-repeat="party in partylist | orderBy:sortColumn:sortReverse | filter:{GRP_CODE: search.GRP_CODE, GRP_NAME: search.GRP_NAME, AC_CODE: search.AC_CODE, AC_NAME: search.AC_NAME }">
+        <td width="150px" style="height:10px;vertical-align:middle;">[[party.GRP_CODE]]</td>
+        <td width="300px" style="height:10px;vertical-align:middle;">[[party.GRP_NAME]]</td>
+        <td width="150px" style="height:10px;vertical-align:middle;">[[party.AC_CODE]]</td>
+        <td width="300px" style="height:10px;vertical-align:middle;">[[party.AC_NAME]]</td>
+        <td width="200px" style="height:10px;vertical-align:middle;">
+            <button type="button" ng-click="removeParty(party)"  class="btn btn-sm btn-danger" >
+              <i class="glyphicon glyphicon-trash"></i>
+            </button>
+            <button type="button" ng-click="editParty(party)"  class="btn btn-sm btn-danger" >
+              <i class="glyphicon glyphicon-pencil"></i>
+            </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div id="DeleteParty" class="modal fade" role="dialog" tabindex="-1"  aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 id="DelformHdr" class="modal-title">Delete Party</h4>
+        </div>
+        <form name="frmDelPrt" ng-submit="frmDelPrt.$valid && submitForm(frmDelPrt.$valid)" novalidate role='form'>
+          <div class="modal-body">
+              <div class="form-group">
+                <label id="Delfromlbl">Are you sure to delete the Party : [[selectedPrt.AC_CODE]] : [[selectedPrt.AC_NAME]] </label>
+              </div>
+              <div id="hiddenvar" ng-hide="true">
+                <label id="rowind"> [[currentIndex]] </label>
+              </div>
+          </div>    
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="deleteParty(selectedPrt.AC_CODE, currentIndex)">Delete</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="EditParty" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modify Party</h4>
+        </div>
+        <form name="frmModprt" ng-submit="frmModprt.$valid && submitForm(frmModprt.$valid)" novalidate role='form'>
+          <div class="modal-body" >
+              <label>Party : </label>
+              <div class="form-group">
+                <div class="col-lg-3 col-md-3 col-sm-3" style="padding-bottom: 10px;">
+                  <input class="form-control" ng-model="selectedPrt.AC_CODE" name="partyid" required disabled>
+                </div>
+                <div class="col-lg-9 col-md-9 col-sm-9" style="padding-bottom: 10px;">
+                  <input type="text" class="form-control" ng-model="selectedPrt.AC_NAME" placeholder="Party Name" name="partyname" required>
+                  <span ng-show="frmModprt.partyname.$dirty && frmModprt.partyname.$error.required">Party Name is required !</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Active : </label><input type="checkbox" ng-model="selectedPrt.ACTIVESTATUS" name="taxAudit">
+              </div>
+
+              <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#PartyModMainTab">Main</a></li>
+                <li><a data-toggle="tab" href="#PartyModAddressTab">Address</a></li>
+                <li><a data-toggle="tab" href="#PartyModContactTab">Contact</a></li>
+                <li><a data-toggle="tab" href="#PartyModTaxInfoTab">Income Tax</a></li>
+                <li><a data-toggle="tab" href="#PartyModGSTInfoTab">GST Info</a></li>
+              </ul>
+
+              <div class="tab-content">
+                <div id="PartyModMainTab" class="tab-pane fade in active">
+                  <div class="panel panel-default">
+                    <div class="panel-body" style="height: 250px">
+                          <label>Group : </label>
+                          <div class="form-group">
+                            <div class="col-lg-3 col-md-3 col-sm-3" style="padding-bottom: 10px;">
+                              <input class="form-control" ng-model="selectedPrt.GRP_CODE" name="GrpCode" ng-blur="getSelectedGrpName(selectedPrt.GRP_CODE, 'EDIT')" required >
+                            </div>
+                            <div class="col-lg-9 col-md-9 col-sm-9" style="padding-bottom: 10px;">
+                              <input list="grplist" class="form-control" ng-model="selectedPrt.GRP_NAME" ng-blur="getSelectedGrpID(selectedPrt.GRP_NAME,'MODIFY')" placeholder="Enter group name" name="groupname" required>
+                              <span ng-show="frmModprt.groupname.$dirty && frmModprt.groupname.$error.required">Group Name is required !</span>
+                              <span ng-show="isIncorrectGroup">Incorect Group !!</span> 
+                              <datalist id="grplist" >
+                                  <option ng-repeat="m in grouplist">[[m.GRP_NAME]]</option> 
+                              </datalist>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                              <label>Type : </label>
+                            </div>
+                            <div class="col-lg-9 col-md-9 col-sm-9">
+                              <select class="form-control" name="orgType" ng-model="selectedPrt.ORG_TYPE" ng-change="setSEX()">
+                                <option value="0">Individual</option>
+                                <option value="1">HUF</option>
+                                <option value="2">Partnership Firm</option>
+                                <option value="3">Company</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          <div class="form-group">
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                              <label>DOB / DOR : </label>
+                            </div>
+                            <div class="col-lg-9 col-md-9 col-sm-9">
+                              <input type="date" class="form-control" ng-model="selectedPrt.DOB" name="prtdob" >
+                            </div>  
+                          </div>
+
+                          <div class="form-group">
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                              <label>Sex : </label>
+                            </div>
+                            <div class="col-lg-9 col-md-9 col-sm-9">                            
+                              <select class="form-control" name="sex" ng-model="selectedPrt.SEX" >
+                                <option value="M">Male</option>
+                                <option value="F">Female</option>
+                                <option value="N">Not Applicable</option>
+                              </select>
+                            </div>
+                          </div>
+
+                    </div>
+                  </div>
+                </div>
+
+                <div id="PartyModAddressTab" class="tab-pane fade">
+                  <div class="panel panel-default">
+                    <div class="panel-body" style="height: 250px">
+                          <div class="form-group">
+                            <label>Party Address :</label>
+                            <input type="text" class="form-control" ng-model="selectedPrt.ADDRESS1" placeholder="Address line 1" name="add1" >
+                            <input type="text" class="form-control" ng-model="selectedPrt.ADDRESS2" placeholder="Address line 2" name="add2" >
+                            <input type="text" class="form-control" ng-model="selectedPrt.ADDRESS3" placeholder="Address line 3" name="add3" >
+                            <input type="text" class="form-control" ng-model="selectedPrt.ADDRESS4" placeholder="Address line 4" name="add4" >
+                          </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="PartyModContactTab" class="tab-pane fade">
+                  <div class="panel panel-default">
+                    <div class="panel-body" style="height: 250px">
+                          <label>Office Phone/mobile : </label>
+                          <div class="form-group">
+                            <div class="col-lg-6 col-md-6 col-sm-6" style="padding-bottom: 10px;">
+                              <input class="form-control" ng-model="selectedPrt.OFF_TEL1" name="prttel1" placeholder="Office phone 1">
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6" style="padding-bottom: 10px;">
+                              <input class="form-control" ng-model="selectedPrt.OFF_TEL2" name="prttel2" placeholder="Office phone 2" >
+                            </div>
+                          </div>
+
+                          <label>Residential Phone/mobile : </label>
+                          <div class="form-group">
+                            <div class="col-lg-6 col-md-6 col-sm-6" style="padding-bottom: 10px;">
+                              <input class="form-control" ng-model="selectedPrt.RES_TEL1" name="prttel3" placeholder="Residential phone 1">
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6" style="padding-bottom: 10px;">
+                              <input  class="form-control" ng-model="selectedPrt.RES_TEL2" name="prttel4" placeholder="Residential phone 2" >
+                            </div>
+                          </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="PartyModTaxInfoTab" class="tab-pane fade">
+                  <div class="panel panel-default">
+                    <div class="panel-body" style="height: 250px">
+                      <label>PAN : </label>
+                      <div class="form-group">
+                          <input class="form-control" ng-model="selectedPrt.PAN1" name="prtPAN" placeholder="PAN Number">
+                      </div>
+                      <div class="form-group">
+                          Advance Tax Payer : <input type="checkbox" ng-model="selectedPrt.ADV_TAX_OPT" name="advTax">
+                      </div>
+                      <div class="form-group">
+                          TDS Deductor : <input type="checkbox" ng-model="selectedPrt.TDS_APPL_OPT" name="tdsAppl">
+                      </div>
+                      <div class="form-group">
+                          Tax Audit : <input type="checkbox" ng-model="selectedPrt.TAX_AUDIT_OPT" name="taxAudit">
+                      </div>
+                    </div>  
+                  </div>
+                </div>
+
+                <div id="PartyModGSTInfoTab" class="tab-pane fade">
+                  <div class="panel panel-default">
+                    <div class="panel-body" style="height: 250px">
+                      <label>GST Number : </label>
+                      <div class="form-group">
+                          <input class="form-control" ng-model="selectedPrt.GST_NO" name="prtGST" placeholder="GST Number">
+                      </div>
+                      <div class="form-group">
+                          GST Return : <input type="checkbox" ng-model="selectedPrt.GST_APPL_OPT" name="gstAppl">
+                      </div>
+                    </div>  
+                  </div>
+                </div>
+
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="modifyParty(selectedPrt)" ng-disabled='frmModprt.$invalid'>Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+
+  <div id="AddNewParty" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Add New Party</h4>
+        </div>
+        <form name="frmAddprt" ng-submit="frmAddprt.$valid && submitForm(frmAddprt.$valid)" novalidate role='form'>
+          <div class="modal-body" >
+              <label>Party : </label>
+              <div class="form-group">
+                <div class="col-lg-3 col-md-3 col-sm-3" style="padding-bottom: 10px;">
+                  <input class="form-control" ng-model="Prt.AC_CODE" name="partyid" required>
+                </div>
+                <div class="col-lg-9 col-md-9 col-sm-9" style="padding-bottom: 10px;">
+                  <input type="text" class="form-control" ng-model="Prt.AC_NAME" placeholder="Party Name" name="partyname" required>
+                  <span ng-show="frmAddprt.partyname.$dirty && frmAddprt.partyname.$error.required">Party Name is required !</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Active : </label><input type="checkbox" ng-model="Prt.ACTIVESTATUS" name="taxAudit" ng-checked="true">
+              </div>
+              <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#PartyAddMainTab">Main</a></li>
+                <li><a data-toggle="tab" href="#PartyAddAddressTab">Address</a></li>
+                <li><a data-toggle="tab" href="#PartyAddContactTab">Contact</a></li>
+                <li><a data-toggle="tab" href="#PartyAddTaxInfoTab">Income Tax</a></li>
+                <li><a data-toggle="tab" href="#PartyAddGSTInfoTab">GST Info</a></li>
+               </ul>
+              <div class="tab-content">              
+                <div id="PartyAddMainTab" class="tab-pane fade in active" >
+                  <div class="panel panel-default">
+                    <div class="panel-body" style="height: 250px">
+                      <label>Group :</label>
+                      <div class="form-group">
+                        <div class="col-lg-3 col-md-3 col-sm-3" style="padding-bottom: 10px;">
+                          <input class="form-control" ng-model="Prt.GRP_CODE" name="GrpCode" ng-blur="getSelectedGrpName(Prt.GRP_CODE, 'ADD')" required >
+                        </div>
+                        <div class="col-lg-9 col-md-9 col-sm-9" style="padding-bottom: 10px;">
+                          <input list="grplist" class="form-control" ng-model="Prt.GRP_NAME" ng-blur="getSelectedGrpID(Prt.GRP_NAME,'ADD')" placeholder="Enter group name" name="groupname" required>
+                          <span ng-show="frmAddprt.groupname.$dirty && frmAddprt.groupname.$error.required">Group Name is required !</span>
+                          <span ng-show="isIncorrectGroup">Incorect Group !!</span> 
+                          <datalist id="grplist" >
+                              <option ng-repeat="m in grouplist">[[m.GRP_NAME]]</option> 
+                          </datalist>
+                        </div>
+                          <div class="form-group">
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                              <label>Type :</label>
+                            </div>
+                            <div class="col-lg-9 col-md-9 col-sm-9">
+                              <select class="form-control" name="gstapp" ng-model="Prt.ORG_TYPE" >
+                                <option value="0">Individual</option>
+                                <option value="1">HUF</option>
+                                <option value="2">Partnership Firm</option>
+                                <option value="3">Company</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                              <label>DOB / DOR : </label>
+                            </div>
+                            <div class="col-lg-9 col-md-9 col-sm-9">
+                              <input type="date" class="form-control" ng-model="Prt.DOB" name="prtdob" >
+                            </div>  
+                          </div>
+                          <div class="form-group">
+                            <div class="col-lg-3 col-md-3 col-sm-3">
+                              <label>Sex : </label>
+                            </div>
+                            <div class="col-lg-9 col-md-9 col-sm-9">                            
+                              <select class="form-control" name="gstapp" ng-model="Prt.SEX" >
+                                <option value="M">Male</option>
+                                <option value="F">Female</option>
+                                <option value="N">Not Applicable</option>
+                              </select>
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="PartyAddAddressTab" class="tab-pane fade">
+                  <div class="panel panel-default">
+                    <div class="panel-body" style="height: 250px">
+                      <div class="form-group">
+                        <label>Party Address :</label>
+                        <input type="text" class="form-control" ng-model="Prt.ADDRESS1" placeholder="Address line 1" name="add1" >
+                        <input type="text" class="form-control" ng-model="Prt.ADDRESS2" placeholder="Address line 2" name="add2" >
+                        <input type="text" class="form-control" ng-model="Prt.ADDRESS3" placeholder="Address line 3" name="add3" >
+                        <input type="text" class="form-control" ng-model="Prt.ADDRESS4" placeholder="Address line 4" name="add4" >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="PartyAddContactTab" class="tab-pane fade">
+                  <div class="panel panel-default">
+                    <div class="panel-body" style="height: 250px">
+                      <label>Office Phone/mobile : </label>
+                      <div class="form-group">
+                        <div class="col-lg-6 col-md-6 col-sm-6" style="padding-bottom: 10px;">
+                          <input class="form-control" ng-model="Prt.OFF_TEL1" name="prttel1" placeholder="Office phone 1">
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6" style="padding-bottom: 10px;">
+                          <input class="form-control" ng-model="Prt.OFF_TEL2" name="prttel2" placeholder="Office phone 2" >
+                        </div>
+                      </div>
+                      <label>Residential Phone/mobile : </label>
+                      <div class="form-group">
+                        <div class="col-lg-6 col-md-6 col-sm-6" style="padding-bottom: 10px;">
+                          <input class="form-control" ng-model="Prt.RES_TEL1" name="prttel3" placeholder="Residential phone 1">
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6" style="padding-bottom: 10px;">
+                          <input  class="form-control" ng-model="Prt.RES_TEL2" name="prttel4" placeholder="Residential phone 2" >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="PartyAddTaxInfoTab" class="tab-pane fade">
+                  <div class="panel panel-default">
+                    <div class="panel-body" style="height: 250px">
+                      <label>PAN : </label>
+                      <div class="form-group">
+                          <input class="form-control" ng-model="Prt.PAN1" name="prtPAN" placeholder="PAN Number">
+                      </div>
+                      <div class="form-group">
+                          Advance Tax Payer : <input type="checkbox" ng-model="Prt.ADV_TAX_OPT" name="advTax">
+                      </div>
+                      <div class="form-group">
+                          TDS Deductor : <input type="checkbox" ng-model="Prt.TDS_APPL_OPT" name="tdsAppl">
+                      </div>
+                      <div class="form-group">
+                          Tax Audit : <input type="checkbox" ng-model="Prt.TAX_AUDIT_OPT" name="taxAudit">
+                      </div>
+                    </div>  
+                  </div>
+                </div>
+                <div id="PartyAddGSTInfoTab" class="tab-pane fade">
+                  <div class="panel panel-default">
+                    <div class="panel-body" style="height: 250px">
+                      <label>GST Number : </label>
+                      <div class="form-group">
+                          <input class="form-control" ng-model="Prt.GST_NO" name="prtGST" placeholder="GST Number">
+                      </div>
+                      <div class="form-group">
+                          GST Return : <input type="checkbox" ng-model="Prt.GST_APPL_OPT" name="gstAppl">
+                      </div>
+                    </div>  
+                  </div>
+                </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="registerNewParty(Prt)" ng-disabled='frmAddprt.$invalid'>Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+
+</div><!-- /.col-sm-12 -->
+</div> <!-- controller div -->
+
+

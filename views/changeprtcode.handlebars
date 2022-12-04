@@ -1,0 +1,51 @@
+<div  ng-controller='partyCntrl'>
+<feesapp-page-header></feesapp-page-header>
+<ul class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="/menus/menuMasters">Masters Menu</a></li>
+  <li>Change Party Code</li>
+</ul>
+
+<table border="0" align="center">
+  <tr>
+    <td  style="margin: 10px; padding: 5px;"><center>
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title"><center>Change Party Code</center></h3>
+        </div>
+        <form name="frmModyear" ng-submit="frmModyear.$valid && submitForm(frmModyear.$valid)" novalidate role='form'>
+          <div class="panel-body">
+              <div class="form-group" style="width:400px">
+                <label>Select Party</label>
+                <input list="Partylist" class="form-control" ng-model="PrttoChange.AC_NAME" ng-blur="getSelectedPrtID(PrttoChange.AC_NAME)" name="partynm" required>
+                <datalist id="Partylist" >
+                    <option ng-repeat="m in partynamelist">[[m.AC_NAME]]</option> 
+                </datalist>
+              </div>
+
+              <div class="form-group" style="width:400px">
+                <label>Current Party Code</label>                
+                <input type="text" class="form-control" ng-model="PrttoChange.AC_CODE" disabled >
+              </div>
+
+              <div class="form-group" style="width:400px">
+                <label>New Party Code</label>
+                <input type="text" class="form-control" ng-model="PrttoChange.NEW_AC_CODE" placeholder="New Party code" required >
+              </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="changePartyCode(PrttoChange.NEW_AC_CODE, 'change')" ng-disabled='frmModyear.$invalid'>Save</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="changePartyCode(PrttoChange.NEW_AC_CODE, 'cancel')">Cancel</button>
+            </div>
+
+            <div ng-class='rtnMessageColor' ng-show="lshowRtnMsg">[[rtnMessage]]</div>
+
+          </div>
+        </form> 
+      </div>
+    </td>
+  </tr>
+</table>
+
+</div> <!-- controller div -->
+

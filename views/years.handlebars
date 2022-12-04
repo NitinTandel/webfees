@@ -1,0 +1,184 @@
+<div ng-controller='yearsCntrl'>
+<feesapp-page-header></feesapp-page-header>
+<ul class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="/menus/menuSetting">Settings Menu</a></li>
+  <li>Manage Years</li>
+</ul>
+
+<div ng-hide="pageDataLoaded" id="loader"></div>
+
+<div ng-cloak class="col-sm-12">
+  <table ng-cloak id="FeesAppTable" class="table table-bordered table-hover table-sm" >
+    <thead class="datatblheader" >
+      <tr class="info">
+        <th width="200px">
+          <a href="#" ng-click="orderByMe('YEAR')">
+           Financial Year 
+            <span ng-show="sortColumn == 'YEAR' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'YEAR' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="150px">
+          <a href="#" ng-click="orderByMe('FROM_DT')">
+           From Date 
+            <span ng-show="sortColumn == 'FROM_DT' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'FROM_DT' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="150px">
+          <a href="#" ng-click="orderByMe('TO_DT')">
+           To Date 
+            <span ng-show="sortColumn == 'TO_DT' && !sortReverse" class="glyphicon glyphicon-sort-by-alphabet"></span>
+            <span ng-show="sortColumn == 'TO_DT' && sortReverse" class="glyphicon glyphicon-sort-by-alphabet-alt"></span>
+          </a>
+        </th>
+        <th width="200px">Actions</th>
+      </tr>
+      <tr class="active">
+        <th width="200px">
+          <input ng-model="search.YEAR"  class="input-sm form-control" type="search"/>
+        </th>
+        <th width="150px">
+          <input ng-model="search.FROM_DT" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="150px">
+          <input ng-model="search.TO_DT" class="input-sm form-control" type="search"/>
+        </th>
+        <th width="200px">
+          <button class="btn btn-primary" ng-click="addYear()" >Add Year</button>
+        </th>
+      </tr>  
+    </thead>
+    <tbody class="datatblbody">
+      <tr class="warning" ng-repeat="period in yearslist | orderBy:sortColumn:sortReverse | filter:{YEAR: search.YEAR, FROM_DT: search.FROM_DT, TO_DT: search.TO_DT }">
+        <td width="200px">[[period.YEAR]]</td>
+        <td width="150px">[[period.FROM_DT]]</td>
+        <td width="150px">[[period.TO_DT]]</td>
+        <td width="200px">
+            <button type="button" ng-click="removeYear(period)"  class="btn btn-sm btn-danger" >
+              <i class="glyphicon glyphicon-trash"></i>
+            </button>
+            <button type="button" ng-click="editYear(period)"  class="btn btn-sm btn-danger" >
+              <i class="glyphicon glyphicon-pencil"></i>
+            </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+<div class="webfeesfooter">
+  <div ng-class='rtnMessageColor'>[[rtnMessage]]</div>
+</div>
+
+  <div id="DeleteYear" class="modal fade" role="dialog" tabindex="-1"  aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 id="DelformHdr" class="modal-title">Delete Transaction Code</h4>
+        </div>
+        <form name="frmDeltrcd" ng-submit="frmDeltrcd.$valid && submitForm(frmDeltrcd.$valid)" novalidate role='form'>
+          <div class="modal-body">
+              <div class="form-group">
+                <label id="Delfromlbl">Are you sure to delete Year : [[selectedYear.YEAR]]  </label>
+              </div>
+              <div id="hiddenvar" ng-hide="true">
+                <label id="rowind"> [[currentIndex]] </label>
+              </div>
+          </div>    
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="deleteTrcd(selectedTrcd.TRCD, currentIndex)">Delete</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="EditYear" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modify Year</h4>
+        </div>
+        <form name="frmModyear" ng-submit="frmModyear.$valid && submitForm(frmModyear.$valid)" novalidate role='form'>
+          <div class="modal-body">
+              <div class="form-group">
+                <label>Year : </label>
+                <input class="form-control" ng-model="selectedYear.YEAR" name="year" required disabled>
+              </div>
+            <table>
+              <tr>
+                 <td width="100px" align="Right"><label>From Date: </label></td><td width="100px"><input type="date" class="form-control" ng-model="selectedYear.FROM_DT_ENTRY" name="fdt" required></td>
+                 <td width="100px" align="Right"><label>To Date : </label></td><td width="100px"><input type="date" class="form-control" ng-model="selectedYear.TO_DT_ENTRY" name="tdt" required></td>
+              </tr>
+              <tr>
+                <td width="200px" align="Center">
+                  <span ng-show="frmModyear.fdt.$dirty && frmModyear.fdt.$error.required">From Date is required !</span>
+                  <span ng-show="frmModyear.tdt.$dirty && frmModyear.tdt.$error.required">To Date is required !</span>
+                </td>
+              </tr>
+              <tr>
+                 <td width="100px" align="Right">Assessment Year: </td><td width="100px"><input class="form-control" ng-model="selectedYear.AY" name="ay" required disabled></td>
+                 <td width="100px" align="Right"></td></td>
+              </tr>
+              <tr>
+                 <td align="Right">IT Due Date 1 : </td><td width="100px"><input type="date" class="form-control" ng-model="selectedYear.FROM_DT_ENTRY" name="fdt" required></td>
+                 <td align="Right">IT Due Date 2 : </td><td width="100px"><input type="date" class="form-control" ng-model="selectedYear.TO_DT_ENTRY" name="tdt" required></td>
+              </tr>
+              <tr>
+                 <td width="100px" align="Right">IT Due Date 3 : </td><td width="100px"><input type="date" class="form-control" ng-model="selectedYear.FROM_DT_ENTRY" name="fdt" required></td>
+                 <td width="100px" align="Right">IT Due Date 4 : </td><td width="100px"><input type="date" class="form-control" ng-model="selectedYear.TO_DT_ENTRY" name="tdt" required></td>
+              </tr>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="modifyTrcd(selectedTrcd)" ng-disabled='frmModtrcd.$invalid'>Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+
+
+  <div id="AddNewYear" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Add New Transaction Code</h4>
+        </div>
+        <form name="frmAddyear" ng-submit="frmAddyear.$valid && submitForm(frmAddyear.$valid)" novalidate role='form'>
+          <div class="modal-body">
+              <div class="form-group">
+                <label>Year</label> 
+                <input type="text" class="form-control" ng-model="newyear.YEAR" placeholder="Year" name="yearid"  required>
+                <span ng-show="frmAddyear.yearid.$dirty && frmAddyear.yearid.$error.required">Field is required !</span>
+              </div>
+              <div class="form-group">
+                <label>From Date </label>
+                <input type="date" class="form-control" ng-model="newyear.FROM_DT" name="addfdt" required>
+                <span ng-show="frmAddyear.addfdt.$dirty && frmAddyear.addfdt.$error.required">From Date is required !</span>
+              </div>
+              <div class="form-group">
+                <label>To Date </label>
+                <input type="date" class="form-control" ng-model="newyear.TO_DT" name="addtdt" required>
+                <span ng-show="frmAddyear.addtdt.$dirty && frmAddyear.addtdt.$error.required">To Date is required !</span>
+              </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="registerNewTrcd(newtrcd)" ng-disabled='frmAddtrcd.$invalid'>Save</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+</div><!-- /.col-sm-12 -->
+</div> <!-- controller div -->
+
+
