@@ -6,9 +6,28 @@ Following is the ip address for webfees server.
 Please do not change it. If changed, need to reasign in router settings.
 
 
--- Frist Tiem
+-- Frist Time
 git status
 
 git init
+
+git add -a
+
+git config --global user.email "nitin.tandel16@gmail.com"
+git config --global user.name "NitinTandel"
+
+git commit -m "Frist commit"
+git remote add origin https://github.com/NitinTandel/webfees.git
+git push --set-upstream origin master
+
+
+
+-- Always
+git status
+git add -a
+
+git commit -m "My comments"
+git remote add origin https://github.com/NitinTandel/webfees.git
+git push -u origin master
 
 
